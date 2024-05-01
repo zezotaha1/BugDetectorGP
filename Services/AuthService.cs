@@ -109,7 +109,6 @@ namespace BugDetectorGP.Services
             var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
             if (user == null)
             {
-                //await Console.Out.WriteLineAsync("Not found");
                 return false;
             }
 
