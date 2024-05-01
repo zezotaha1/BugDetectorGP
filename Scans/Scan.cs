@@ -1,25 +1,64 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+
 namespace BugDetectorGP.Scans
 {
     public class Scan
     {
-        string  folderPath;
-        public void AddNewFile(string file)
+        protected string folderPath;
+
+        public Scan(string folderPath)
         {
-            
+            this.folderPath = folderPath;
         }
-        public void RemoveFile(string file)
+
+        public async Task<string> AddNewFile(string fileName, string content)
         {
-            
+            try
+            {
+                string filePath = Path.Combine(folderPath, fileName);
+
+                File.WriteAllText(filePath, content);
+                return ("File added successfully.");
+            }
+            catch (IOException ex)
+            {
+                return ($"Error occurred: {ex.Message}");
+            }
         }
-        public string ExecuteCommands(string targit)
+
+        public async Task<string> RemoveFile(string fileName)
         {
-            string[] files = Directory.GetFiles(folderPath);
-            string result = "";
+            try
+            {
+                string filePath = Path.Combine(folderPath, fileName);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                    return ("File removed successfully.");
+                }
+                else
+                {
+                    return ("File does not exist.");
+                }
+            }
+            catch (IOException ex)
+            {
+                return ($"Error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<string> ExecuteCommands(string targit)
+        {
+            var files = Directory.GetFiles(folderPath);
+            var result = "";
             foreach (var file in files)
             {
-                string command = "bash " +file+" "+ targit;
+                string command = "bash " + file + " " + targit;
 
                 try
                 {
