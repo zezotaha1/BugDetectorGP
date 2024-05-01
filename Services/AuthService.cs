@@ -61,7 +61,7 @@ namespace BugDetectorGP.Services
                 Email = user.Email,
                 ExpireOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
-                Roles = new List<string> { "User" },
+                Roles = new List<string> { "FreeUser" },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 UserName = user.UserName,
                 RefreshToken = refreshToken.Token,
