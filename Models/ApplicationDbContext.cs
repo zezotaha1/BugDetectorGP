@@ -9,6 +9,6 @@ namespace BugDetectorGP.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-        
+
     }
 }

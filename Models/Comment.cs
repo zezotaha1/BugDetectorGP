@@ -1,12 +1,14 @@
-﻿using System.Reflection.Metadata;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 
 namespace BugDetectorGP.Models
 {
     public class Comment
     {
+        [Key]
         public int CommentId { get; set; }
 
-        public string Content { get; set; } = null!;
+        public string Content { get; set; }
 
         public DateTime PublicationDate { get; set; }
 
@@ -14,8 +16,8 @@ namespace BugDetectorGP.Models
 
         public string UserId { get; set; }
 
-        public virtual Blogs Blog { get; set; } = null!;
+        public virtual Blogs Blog { get; set; } 
 
-        public virtual UserInfo User { get; set; } = null!;
+        public virtual UserInfo User { get; set; } 
     }
 }

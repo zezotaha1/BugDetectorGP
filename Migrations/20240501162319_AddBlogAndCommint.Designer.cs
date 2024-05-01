@@ -4,6 +4,7 @@ using BugDetectorGP.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BugDetectorGP.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240501162319_AddBlogAndCommint")]
+    partial class AddBlogAndCommint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace BugDetectorGP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Blogs", (string)null);
+                    b.ToTable("Blogs");
                 });
 
             modelBuilder.Entity("BugDetectorGP.Models.Comment", b =>
@@ -86,7 +89,7 @@ namespace BugDetectorGP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("BugDetectorGP.Models.UserInfo", b =>
@@ -322,7 +325,7 @@ namespace BugDetectorGP.Migrations
 
             modelBuilder.Entity("BugDetectorGP.Models.UserInfo", b =>
                 {
-                    b.OwnsMany("BugDetectorGP.Models.UserInfo.RefreshTokens#BugDetectorGP.Models.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("BugDetectorGP.Models.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("UserInfoId")
                                 .HasColumnType("nvarchar(450)");
@@ -348,7 +351,7 @@ namespace BugDetectorGP.Migrations
 
                             b1.HasKey("UserInfoId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner()
                                 .HasForeignKey("UserInfoId");
