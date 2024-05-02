@@ -52,7 +52,7 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<string> ExecuteCommands(string targit)
+        public async Task<string> _Scan (string targit)
         {
             var files = Directory.GetFiles(folderPath);
             var result = "";

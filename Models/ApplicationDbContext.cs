@@ -6,6 +6,10 @@ namespace BugDetectorGP.Models
 {
     public class ApplicationDbContext : IdentityDbContext<UserInfo>
     {
+        public ApplicationDbContext()
+        {
+        }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
