@@ -52,13 +52,13 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<string> _Scan (string targit)
+        public string _Scan (string targit)
         {
             var files = Directory.GetFiles(folderPath);
             var result = "";
             foreach (var file in files)
             {
-                string command = "bash " + file + " " + targit;
+                string command = "bash " + folderPath+'/'+file + " " + targit;
 
                 try
                 {
