@@ -52,7 +52,7 @@ namespace BugDetectorGP.Controllers
         [HttpPost("LogOut")]
         public async Task<IActionResult>LogOut([FromBody] LogOutUser model)
         {
-            var token = model.Token ?? Request.Cookies["refrshToken"];
+            var token = model.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest("Token Is Require");
