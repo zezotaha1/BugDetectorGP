@@ -14,10 +14,10 @@ namespace BugDetectorGP.Controllers
 
     public class ScanController : ControllerBase
     {
-        private Scan _FreeWebScan = new Scan("Scans/FreeWebScan");
-        private Scan _PremiumWebScan = new Scan("Scans/PremiumWebScan");
-        private Scan _FreeNetworkScan = new Scan("Scans/FreeNetworkScan");
-        private Scan _PremiumNetworkScan = new Scan("Scans/PremiumNetworkScan");
+        private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
+        private Scan _PremiumWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumWebScan")));
+        private Scan _FreeNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "FreeNetworkScan")));
+        private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
 
         
         [HttpPost("FreeWebScan")]

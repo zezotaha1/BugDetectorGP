@@ -58,7 +58,7 @@ namespace BugDetectorGP.Scans
             var result = "";
             foreach (var file in files)
             {
-                string command = "bash " + folderPath+'/'+file + " " + targit;
+                string command = "bash " +file + " " + targit;
 
                 try
                 {
