@@ -84,7 +84,7 @@ namespace BugDetectorGP
             app.UseRouting();
 
             // Enable CORS
-            app.UseCors("AllowSpecificOrigin");
+            app.UseCors("AllowAnyOrigin");
 
             app.UseAuthentication();
             app.UseAuthorization();
