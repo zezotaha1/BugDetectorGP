@@ -62,7 +62,6 @@ namespace BugDetectorGP.Controllers
             
             return Ok();
         }
-        // 
         private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
         {
             var cookieOptions = new CookieOptions
