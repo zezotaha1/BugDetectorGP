@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BugDetectorGP.Models.blog;
+using Microsoft.AspNetCore.Identity;
 using System.Reflection.Metadata;
 
-namespace BugDetectorGP.Models
+namespace BugDetectorGP.Models.user
 {
-    public class UserInfo:IdentityUser
+    public class UserInfo : IdentityUser
     {
-        public List<RefreshToken> ? RefreshTokens { get; set; }
-        public bool IsSubscripe {  get; set; }
+        public List<RefreshToken>? RefreshTokens { get; set; }
+        public bool IsSubscripe { get; set; }
         //public DateTime StartSubpscrtion ;
         //public DateTime EndSubscrption =>IsSubscripe? StartSubpscrtion.AddYears(1):DateTime.UtcNow;
 

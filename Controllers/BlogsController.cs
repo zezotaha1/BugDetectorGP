@@ -1,5 +1,6 @@
 ﻿using BugDetectorGP.Dto;
 using BugDetectorGP.Models;
+using BugDetectorGP.Models.user;
 using BugDetectorGP.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

@@ -1,5 +1,5 @@
 ﻿using BugDetectorGP.Dto;
-using BugDetectorGP.Models;
+using BugDetectorGP.Models.user;
 
 namespace BugDetectorGP.Services.Interfaces
 {

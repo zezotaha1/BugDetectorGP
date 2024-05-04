@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BugDetectorGP.Models
+namespace BugDetectorGP.Models.user
 {
     public class AuthModel
     {

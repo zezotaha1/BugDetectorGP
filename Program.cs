@@ -12,6 +12,7 @@ using BugDetectorGP.Services;
 using BugDetectorGP.Services.Interfaces;
 using BugDetectorGP.Helpers;
 using Microsoft.AspNetCore.Identity;
+using BugDetectorGP.Models.user;
 
 namespace BugDetectorGP
 {

@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection.Metadata;
+using BugDetectorGP.Models.user;
 
-namespace BugDetectorGP.Models
+namespace BugDetectorGP.Models.blog
 {
     public class Comment
     {
@@ -16,8 +17,8 @@ namespace BugDetectorGP.Models
 
         public string UserId { get; set; }
 
-        public virtual Blogs Blog { get; set; } 
+        public virtual Blogs Blog { get; set; }
 
-        public virtual UserInfo User { get; set; } 
+        public virtual UserInfo User { get; set; }
     }
 }

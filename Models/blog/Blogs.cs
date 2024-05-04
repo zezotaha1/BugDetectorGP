@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BugDetectorGP.Models.user;
 
-namespace BugDetectorGP.Models
+namespace BugDetectorGP.Models.blog
 {
     public class Blogs
     {
@@ -20,6 +21,7 @@ namespace BugDetectorGP.Models
         public int DislikeNumber { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual ICollection<LikesAndDislikes> LikesAndDislikes { get; set; } = new List<LikesAndDislikes>();
 
         public virtual UserInfo User { get; set; }
     }
