@@ -1,4 +1,5 @@
-﻿using BugDetectorGP.Models;
+﻿using BugDetectorGP.Dto;
+using BugDetectorGP.Models;
 using BugDetectorGP.Scans;
 using BugDetectorGP.Services;
 using Microsoft.AspNetCore.Http;
@@ -22,36 +23,36 @@ namespace BugDetectorGP.Controllers
         
         [HttpPost("FreeWebScan")]
 
-        public async Task<IActionResult> FreeWebScan(string Url)
+        public async Task<IActionResult> FreeWebScan(WebScan model)
         {
-            var result = _FreeWebScan._Scan(Url);
+            var result = _FreeWebScan._Scan(model.url);
             return Ok(result);
         }
 
 
         [HttpPost("FreeNetworkScan")]
 
-        public async Task<IActionResult> FreeNetworkScan(string IP)
+        public async Task<IActionResult> FreeNetworkScan(NetworkScan model)
         {
-            var result = _FreeNetworkScan._Scan(IP);
+            var result = _FreeNetworkScan._Scan(model.ip);
             return Ok(result);
         }
 
 
         [HttpPost("PremiumWebScan")]
 
-        public async Task<IActionResult> PremiumWebScan(string Url)
+        public async Task<IActionResult> PremiumWebScan(WebScan model)
         {
-            var result = _PremiumWebScan._Scan(Url);
+            var result = _PremiumWebScan._Scan(model.url);
             return Ok(result);
         }
 
 
         [HttpPost("PremiumNetworkScan")]
 
-        public async Task<IActionResult> PremiumNetworkScan(string IP)
+        public async Task<IActionResult> PremiumNetworkScan(NetworkScan model)
         {
-            var result = _PremiumNetworkScan._Scan(IP);
+            var result = _PremiumNetworkScan._Scan(model.ip);
             return Ok(result);
         }
         
