@@ -5,20 +5,20 @@ namespace BugDetectorGP.Models.blog
 {
     public class LikesAndDislikes
     {
-            [Key]
-            public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
-            public bool LikeOrDislike { get; set; }//if true this meen like else dislike 
+        public bool LikeOrDislike { get; set; }//if true this meen like else dislike 
 
-            public DateTime PublicationDate { get; set; }
+        public DateTime PublicationDate { get; set; } = DateTime.Now;
 
-            public int BlogId { get; set; }
+        public int BlogId { get; set; }
 
-            public string UserId { get; set; }
+        public string UserId { get; set; }
 
-            public virtual Blogs Blog { get; set; }
+        public virtual Blogs Blog { get; set; }
 
-            public virtual UserInfo User { get; set; }
+        public virtual UserInfo User { get; set; }
     }
 
 }

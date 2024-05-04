@@ -13,6 +13,7 @@ namespace BugDetectorGP.Models.user
 
         public virtual ICollection<Blogs> Blogs { get; set; } = new List<Blogs>();
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public virtual ICollection<LikesAndDislikes> LikesAndDislikes { get; set; } = new List<LikesAndDislikes>();
 
     }
 }
