@@ -1,4 +1,5 @@
-﻿using BugDetectorGP.Models.user;
+﻿using BugDetectorGP.Models.blog;
+using BugDetectorGP.Models.user;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,6 +15,10 @@ namespace BugDetectorGP.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+
+        public DbSet<Blogs> Blogs { get; set; }
+        public DbSet<Comment> Comment { get; set; }
+        public DbSet<LikesAndDislikes> LikesAndDislikes { get; set; }
 
     }
 }

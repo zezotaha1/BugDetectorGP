@@ -92,11 +92,16 @@ namespace BugDetectorGP.Controllers
             NewBlog.PublicationDate = DateTime.UtcNow;
             var findUser =  await _userManager.FindByNameAsync(userinfo.UserName);
             NewBlog.UserId=findUser.Id;
-            _Context.Add(NewBlog);
+            _Context.Blogs.Add(NewBlog);
             _Context.SaveChanges();
             return Ok("New Blog are added");
         }
-        
+
+        [HttpGet("ReturnAllBlogs")]
+        public async Task<IActionResult> ReturnAllBlogs()
+        {
+            return Ok(_Context.Blogs.ToList());
+        }
 
     }
 }

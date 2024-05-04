@@ -2,6 +2,7 @@
 using BugDetectorGP.Models;
 using BugDetectorGP.Scans;
 using BugDetectorGP.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace BugDetectorGP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
 
     public class ScanController : ControllerBase
     {
@@ -23,37 +25,37 @@ namespace BugDetectorGP.Controllers
         
         [HttpPost("FreeWebScan")]
 
-        public async Task<IActionResult> FreeWebScan(WebScan model)
+        public async Task<ScanResult> FreeWebScan(WebScan model)
         {
-            var result = _FreeWebScan._Scan(model.url);
-            return Ok(result);
+            return new ScanResult()
+            { result = _FreeWebScan._Scan(model.url) };
         }
 
 
         [HttpPost("FreeNetworkScan")]
 
-        public async Task<IActionResult> FreeNetworkScan(NetworkScan model)
+        public async Task<ScanResult> FreeNetworkScan(NetworkScan model)
         {
-            var result = _FreeNetworkScan._Scan(model.ip);
-            return Ok(result);
+            return new ScanResult()
+            { result = _FreeWebScan._Scan(model.ip) };
         }
 
 
         [HttpPost("PremiumWebScan")]
 
-        public async Task<IActionResult> PremiumWebScan(WebScan model)
+        public async Task<ScanResult> PremiumWebScan(WebScan model)
         {
-            var result = _PremiumWebScan._Scan(model.url);
-            return Ok(result);
+            return new ScanResult()
+            { result = _FreeWebScan._Scan(model.url) };
         }
 
 
         [HttpPost("PremiumNetworkScan")]
 
-        public async Task<IActionResult> PremiumNetworkScan(NetworkScan model)
+        public async Task<ScanResult> PremiumNetworkScan(NetworkScan model)
         {
-            var result = _PremiumNetworkScan._Scan(model.ip);
-            return Ok(result);
+            return new ScanResult()
+            { result = _FreeWebScan._Scan(model.ip) };
         }
         
 
