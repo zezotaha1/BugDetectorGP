@@ -4,6 +4,7 @@ using BugDetectorGP.Models.user;
 using BugDetectorGP.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,7 @@ namespace BugDetectorGP.Controllers
             if (!result.IsAuthenticated)
                 return BadRequest(result.message);
 
-            SetRefreshTokenInCooke(result.RefreshToken, result.RefreshTokenExpiration);
+            SetRefreshTokenInCooke(result.RefreshToken, result.RefreshTokenExpiration,result.Token);
             return Ok(result);
         }
 
@@ -46,10 +47,7 @@ namespace BugDetectorGP.Controllers
             if (!result.IsAuthenticated)
                 return BadRequest(result.message);
             if(!string.IsNullOrEmpty(result.RefreshToken))
-                SetRefreshTokenInCooke(result.RefreshToken,result.RefreshTokenExpiration);
-            
-            Response.Cookies.Append("Token", result.Token);
-            Response.Cookies.Append("refreshToken", result.RefreshToken);
+                SetRefreshTokenInCooke(result.RefreshToken,result.RefreshTokenExpiration, result.Token);
 
             return Ok(result);
         }
@@ -69,7 +67,7 @@ namespace BugDetectorGP.Controllers
             Response.Cookies.Delete("Token");
             return Ok("Logout successful");
         }
-        private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
+        private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire,string token)
         {
             var cookieOptions = new CookieOptions
             {
@@ -81,6 +79,7 @@ namespace BugDetectorGP.Controllers
             };
 
             Response.Cookies.Append("refreshToken", refreshtoken, cookieOptions);
+            Response.Cookies.Append("Token", token, cookieOptions);
         }
        
     }
