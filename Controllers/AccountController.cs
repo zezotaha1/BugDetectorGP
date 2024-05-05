@@ -46,8 +46,11 @@ namespace BugDetectorGP.Controllers
             if (!result.IsAuthenticated)
                 return BadRequest(result.message);
             if(!string.IsNullOrEmpty(result.RefreshToken))
-                SetRefreshTokenInCooke(result.RefreshToken,result.RefreshTokenExpiration);  
-          
+                SetRefreshTokenInCooke(result.RefreshToken,result.RefreshTokenExpiration);
+            
+            Response.Cookies.Append("Token", result.Token);
+            Response.Cookies.Append("refreshToken", result.RefreshToken);
+
             return Ok(result);
         }
 
