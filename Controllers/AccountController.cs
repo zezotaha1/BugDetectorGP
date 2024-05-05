@@ -66,6 +66,7 @@ namespace BugDetectorGP.Controllers
             if(!resault)
                 return BadRequest("Token is Invalid");
             Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("Token");
             return Ok("Logout successful");
         }
         private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
