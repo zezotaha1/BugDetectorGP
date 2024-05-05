@@ -49,20 +49,21 @@ namespace BugDetectorGP.Controllers
                 SetRefreshTokenInCooke(result.RefreshToken,result.RefreshTokenExpiration);  
           
             return Ok(result);
-        } 
+        }
 
+        [Authorize]
         [HttpPost("LogOut")]
         public async Task<IActionResult>LogOut([FromBody] LogOutUser model)
         {
-            var token =Request.Cookies["refreshToken"]?? model.Token;
+            var token =Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest("Token Is Require or you must be login");
             var resault=await _authService.LogoutAsync(token);
             if(!resault)
                 return BadRequest("Token is Invalid");
-            
-            return Ok();
+            Response.Cookies.Delete("refreshToken");
+            return Ok("Logout successful");
         }
         private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
         {
