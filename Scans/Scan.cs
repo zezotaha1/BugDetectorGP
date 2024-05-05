@@ -96,12 +96,12 @@ namespace BugDetectorGP.Scans
             {
                 string title = "", details = "", output = "";
 
-                while (result[i] == '#') { i++; continue; }
-                while (result[i] != '#') { title += result[i]; i++; continue; }
-                while (result[i] == '#') { i++; continue; }
-                while (result[i] != '#') { details += result[i]; i++; continue; }
-                while (result[i] == '#') { i++; continue; }
-                while (result[i] != '#') { output += result[i]; i++; continue; }
+                while ( i < result.Length && result[i] == '#') { i++; continue; }
+                while ( i < result.Length && result[i] != '#') { title += result[i]; i++; continue; }
+                while ( i < result.Length && result[i] == '#') { i++; continue; }
+                while ( i < result.Length && result[i] != '#') { details += result[i]; i++; continue; }
+                while ( i < result.Length && result[i] == '#') { i++; continue; }
+                while ( i < result.Length && result[i] != '#') { output += result[i]; i++; continue; }
 
                 _output.Add(new List<string> { title, details, output });
             }
