@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 
 namespace BugDetectorGP.Controllers
@@ -82,14 +83,11 @@ namespace BugDetectorGP.Controllers
             }
             var token = GetCurrentToken();
             AuthModel userinfo = await GetUserProfile();
-           /* if(userinfo.IsAuthenticated==false) {
-               return Unauthorized();
-            }*/
-           
+     
             var NewBlog = new Blogs();
             NewBlog.Title = model.Title;
             NewBlog.Content = model.Content;
-            NewBlog.PublicationDate = DateTime.UtcNow;
+            NewBlog.PublicationDate = DateTime.UtcNow.ToLocalTime();
             var findUser =  await _userManager.FindByNameAsync(userinfo.UserName);
             NewBlog.UserId=findUser.Id;
             _Context.Blogs.Add(NewBlog);
@@ -100,7 +98,25 @@ namespace BugDetectorGP.Controllers
         [HttpGet("ReturnAllBlogs")]
         public async Task<IActionResult> ReturnAllBlogs()
         {
-            return Ok(_Context.Blogs.ToList());
+           var listBlog=_Context.Blogs.ToList();
+            AuthModel userinfo = await GetUserProfile();
+            
+            var AllBlogs = new List<AllBlogsDTO>();
+            foreach(var  blog in listBlog)
+               {
+                var UserData =await _Context.Users.SingleOrDefaultAsync(u => u.Id == blog.UserId);
+                var temp = new AllBlogsDTO
+                { 
+                    Title = blog.Title,
+                    Content = blog.Content,            
+                    UsrName = UserData.UserName,
+                    PublicationDate=blog.PublicationDate,
+                    NumberOfDisLikes=blog.DislikeNumber,
+                    NumberOfLikes=blog.LikeNumber
+                };
+                     AllBlogs.Add(temp);
+               }
+            return Ok(AllBlogs);
         }
 
     }
