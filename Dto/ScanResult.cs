@@ -3,6 +3,6 @@ namespace BugDetectorGP.Dto
 {
     public class ScanResult
     {
-        public string result { get; set; }
+        public List<List<string>> result { get; set; }
     }
 }

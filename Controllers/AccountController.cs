@@ -1,5 +1,6 @@
 ﻿using BugDetectorGP.Dto;
 using BugDetectorGP.Models;
+using BugDetectorGP.Models.user;
 using BugDetectorGP.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,6 +34,7 @@ namespace BugDetectorGP.Controllers
             SetRefreshTokenInCooke(result.RefreshToken, result.RefreshTokenExpiration);
             return Ok(result);
         }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginUser model)
         {
@@ -52,10 +54,10 @@ namespace BugDetectorGP.Controllers
         [HttpPost("LogOut")]
         public async Task<IActionResult>LogOut([FromBody] LogOutUser model)
         {
-            var token = model.Token ?? Request.Cookies["refreshToken"];
+            var token =Request.Cookies["refreshToken"]?? model.Token;
 
             if (string.IsNullOrEmpty(token))
-                return BadRequest("Token Is Require");
+                return BadRequest("Token Is Require or you must be login");
             var resault=await _authService.LogoutAsync(token);
             if(!resault)
                 return BadRequest("Token is Invalid");

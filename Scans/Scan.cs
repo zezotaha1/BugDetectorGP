@@ -52,7 +52,7 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public string _Scan (string targit)
+        public async Task<List<List<string>>> _Scan (string targit)
         {
             var files = Directory.GetFiles(folderPath);
             var result = "";
@@ -87,9 +87,27 @@ namespace BugDetectorGP.Scans
                 {
                     result += $"Error: {ex.Message}";
                 }
-                result += "\n\n\n\n\n";
+                
             }
-            return result;
+
+            List<List<string>> _output = new List<List<string>>();
+            
+            for (int i = 0; i < result.Length; i++)
+            {
+                string title = "", details = "", output = "";
+
+                while (result[i] == '#') { i++; continue; }
+                while (result[i] != '#') { title += result[i]; i++; continue; }
+                while (result[i] == '#') { i++; continue; }
+                while (result[i] != '#') { details += result[i]; i++; continue; }
+                while (result[i] == '#') { i++; continue; }
+                while (result[i] != '#') { output += result[i]; i++; continue; }
+
+                _output.Add(new List<string> { title, details, output });
+            }
+            
+            return _output;
         }
+        
     }
 }

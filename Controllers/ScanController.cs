@@ -28,16 +28,16 @@ namespace BugDetectorGP.Controllers
         public async Task<ScanResult> FreeWebScan(WebScan model)
         {
             return new ScanResult()
-            { result = _FreeWebScan._Scan(model.url) };
+            { result = await _FreeWebScan._Scan(model.url) };
         }
 
 
         [HttpPost("FreeNetworkScan")]
 
-        public async Task<ScanResult> FreeNetworkScan(NetworkScan model)
+        public async Task<ScanResult> FreeNetworkScan(WebScan model)
         {
             return new ScanResult()
-            { result = _FreeWebScan._Scan(model.ip) };
+            { result = await _FreeNetworkScan._Scan(model.url) };
         }
 
 
@@ -46,16 +46,16 @@ namespace BugDetectorGP.Controllers
         public async Task<ScanResult> PremiumWebScan(WebScan model)
         {
             return new ScanResult()
-            { result = _FreeWebScan._Scan(model.url) };
+            { result = await _PremiumWebScan._Scan(model.url) };
         }
 
 
         [HttpPost("PremiumNetworkScan")]
 
-        public async Task<ScanResult> PremiumNetworkScan(NetworkScan model)
+        public async Task<ScanResult> PremiumNetworkScan(WebScan model)
         {
             return new ScanResult()
-            { result = _FreeWebScan._Scan(model.ip) };
+            { result = await _PremiumNetworkScan._Scan(model.url) };
         }
         
 
