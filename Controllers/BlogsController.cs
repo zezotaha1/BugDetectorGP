@@ -94,7 +94,24 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("New Blog are added");
         }
-
+        [HttpDelete("DeleteBlog")]
+        public async Task<IActionResult> DeleteBlog(BlogLikeAndDisLikeDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AuthModel userinfo = await GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+            if(blog.UserId == findUser.Id)
+            {
+                _Context.Blogs.Remove(blog);
+                _Context.SaveChanges();
+                return Ok("Blog are Deleted");
+            }
+            return BadRequest("You dont Acsess this Blog");
+        }
         [HttpGet("ReturnAllBlogs")]
         public async Task<IActionResult> ReturnAllBlogs()
         {
@@ -118,6 +135,109 @@ namespace BugDetectorGP.Controllers
                }
             return Ok(AllBlogs);
         }
+        [HttpGet("Like")]
+        public async Task<IActionResult>LikeToBlog(BlogLikeAndDisLikeDTO model)
+        {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AuthModel userinfo = await GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+            var findBlogLike=await _Context.LikesAndDislikes.SingleOrDefaultAsync(b => ( b.BlogId == model.Blogid && b.UserId == findUser.Id ));
+            if(findBlogLike==null )
+            {
+                var LikeBlog = new LikesAndDislikes();
+                LikeBlog.PublicationDate = DateTime.Now.ToLocalTime();
+                LikeBlog.LikeOrDislike = true;
+                LikeBlog.UserId = findUser.Id;
+                LikeBlog.BlogId=model.Blogid;
+                blog.LikeNumber+=1;
+                _Context.LikesAndDislikes.Add(LikeBlog);
+                _Context.SaveChanges();
+                return Ok();
+            }
+            if(findBlogLike.LikeOrDislike==false)
+            {
+                findBlogLike.LikeOrDislike = true;
+                blog.LikeNumber += 1;
+                blog.DislikeNumber -= 1;
+                _Context.SaveChanges();
+                return Ok();
+            }
+            return Ok("You Are Liked");
 
+        }
+        [HttpGet("DisLike")]
+        public async Task<IActionResult> DisLikeToBlog(BlogLikeAndDisLikeDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AuthModel userinfo = await GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+            var findBlogLike = await _Context.LikesAndDislikes.SingleOrDefaultAsync(b => (b.BlogId == model.Blogid && b.UserId == findUser.Id));
+            if (findBlogLike == null)
+            {
+                var LikeBlog = new LikesAndDislikes();
+                LikeBlog.PublicationDate = DateTime.Now.ToLocalTime();
+                LikeBlog.LikeOrDislike = false;
+                LikeBlog.UserId = findUser.Id;
+                LikeBlog.BlogId = model.Blogid;
+                blog.DislikeNumber+= 1;
+                _Context.LikesAndDislikes.Add(LikeBlog);
+                _Context.SaveChanges();
+                return Ok();
+            }
+            if (findBlogLike.LikeOrDislike == true)
+            {
+                findBlogLike.LikeOrDislike = false;
+                blog.DislikeNumber += 1;
+                blog.LikeNumber -= 1;
+                _Context.SaveChanges();
+                return Ok();
+            }
+            return Ok("You Are DisLiked");
+        }
+        [HttpPost("Comment")]
+        public async Task<IActionResult> AddCommentToBlog(CommentDto model)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AuthModel userinfo = await GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+            var addcomment = new Comment();
+            addcomment.PublicationDate = DateTime.Now.ToLocalTime();
+            addcomment.Content = model.Comment;
+            addcomment.UserId = findUser.Id;
+            addcomment.BlogId = model.BlogId;
+            _Context.Comment.Add(addcomment);
+            _Context.SaveChanges();
+            return Ok(addcomment);
+        }
+        [HttpDelete("DeleteComment")]
+        public async Task<IActionResult>DeleteComment(DeleteCommentDto model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AuthModel userinfo = await GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
+            var comment=await _Context.Comment.SingleOrDefaultAsync(c=>c.CommentId == model.CommentId);
+            if (blog == null||comment==null)
+                return BadRequest("Blog or Comment Not Found");
+            if (comment.UserId != findUser.Id)
+                return BadRequest("you Dont Remove this Comment");
+            _Context.Comment.Remove(comment);
+            _Context.SaveChanges();
+            return Ok("Comment are Deleted");
+        }
     }
 }

@@ -41,22 +41,23 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("Email is already registered!") ;
             
             long x = -1;
-            if (EmailAndOTP.TryGetValue(model.email, out x)!)
+            if (EmailAndOTP.ContainsKey(model.email)==true)
             {
                 return Ok("This email have OTP");
             }
             
             int otp = new Random().Next(100000, 999999);
 
-            var sendemail = SendEmail(model.email, otp);
+            string SendEmailStatus =await SendGridEmailSender.SendEmail(model.email, "OTP for Register verification", "Your OTP is: "+otp);
 
-            if (sendemail != "OTP sent successfully.") 
+
+            if (SendEmailStatus != "Email sent successfully.") 
             {
-                return BadRequest(sendemail);
+                return BadRequest("Failed to send OTP: "+SendEmailStatus);
             }
 
             EmailAndOTP.Add(model.email, otp);
-            return Ok(sendemail);
+            return Ok("OTP and "+SendEmailStatus);
         }
 
         [HttpPost("Register")]
@@ -64,18 +65,19 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(model);
-            
-            long x = -1;
 
-            if (EmailAndOTP.TryGetValue(model.Email,out x)!)
+            if (await _userManager.FindByEmailAsync(model.Email) is not null)
+                return BadRequest("Email is already registered!");
+
+            if (EmailAndOTP.ContainsKey(model.Email)==false)
             {
-                return BadRequest("This email dosn\'t have OTP ");
+                return BadRequest("This email dosn\'t have OTP. ");
             }
 
-            var _EmailAndOTP = EmailAndOTP[model.Email];
-            if (_EmailAndOTP != model.OTP)
+            if (EmailAndOTP[model.Email] != model.OTP)
             {
-                return BadRequest("the OTP incorrect");
+               
+                return BadRequest("the OTP incorrect.");
             }
             
             var result = await _authService.RegisterAsync(model);
@@ -123,7 +125,7 @@ namespace BugDetectorGP.Controllers
             return Ok("Logout successful");
         }
 
-        [HttpPost(" GenerateAnOTPForForgotPassword")]
+        /*[HttpPost(" GenerateAnOTPForForgotPassword")]
         public async Task<IActionResult> GenerateAnOTPForPassword(GenerateAnOTPDto model)
         {
             if (model.email == null)
@@ -140,16 +142,16 @@ namespace BugDetectorGP.Controllers
 
             int otp = new Random().Next(100000, 999999);
 
-            var sendemail = SendEmail(model.email, otp);
+            string SendEmailStatus = SendGridEmailSender.SendEmail(model.email, otp);
 
-            if (sendemail != "OTP sent successfully.")
+            if (SendEmailStatus != Task<"Email sent successfully.">)
             {
-                return BadRequest(sendemail);
+                return BadRequest("Failed to send OTP :"+SendEmailStatus);
             }
 
             ForgotPasswordAndOTP.Add(model.email, otp);
             return Ok(sendemail);
-        }
+        }*/
         private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
         {
             var cookieOptions = new CookieOptions
@@ -162,46 +164,6 @@ namespace BugDetectorGP.Controllers
             };
 
             Response.Cookies.Append("refreshToken", refreshtoken, cookieOptions);
-        }
-
-        private string SendEmail(string email ,int OTP)
-        {
-            // Set the sender's email address and password
-            string senderEmail = "bugdetector8@gmail.com";
-            string senderPassword = "Z.z123456";
-
-            using var message = new MailMessage(senderEmail, email)
-            {
-                // Set the subject and body of the email with the OTP
-                Subject = "OTP for verification",
-                Body = "Your OTP is: " + OTP
-            };
-
-            // Create a new SmtpClient object
-            using var client = new SmtpClient("smtp.gmail.com")
-            {
-                // Set the port and credentials for the SMTP server
-                Port = 587, // Port number depends on your SMTP server configuration
-                Credentials = new NetworkCredential(senderEmail, senderPassword),
-                EnableSsl = true // Enable SSL/TLS encryption
-            };
-
-            try
-            {
-                // Send the email
-                client.Send(message);
-                return "OTP sent successfully.";
-            }
-            catch (Exception ex)
-            {
-                return "Failed to send OTP: " + ex.Message;
-            }
-            finally
-            {
-                // Dispose of the MailMessage and SmtpClient objects
-                message.Dispose();
-                client.Dispose();
-            }
         }
        
     }
