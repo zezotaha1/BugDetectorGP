@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Text;
 using static System.Net.WebRequestMethods;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BugDetectorGP.Controllers
 {
@@ -22,13 +23,15 @@ namespace BugDetectorGP.Controllers
     {
         private readonly IAuthService _authService;
         private readonly UserManager<UserInfo> _userManager;
+        private readonly IPasswordHasher<UserInfo> _passwordHasher;
         private Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> { };
         private Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> { };
 
-        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager)
+        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher)
         {
-            _authService = authService;
+            this._authService = authService;
             this._userManager = _userManager;
+            this._passwordHasher = _passwordHasher;
 
         }
         [HttpPost("GenerateAnOTP")]
@@ -70,15 +73,10 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("Email is already registered!");
 
             if (EmailAndOTP.ContainsKey(model.Email)==false)
-            {
                 return BadRequest("This email dosn\'t have OTP. ");
-            }
 
-            if (EmailAndOTP[model.Email] != model.OTP)
-            {
-               
+            if (EmailAndOTP[model.Email] != model.OTP) 
                 return BadRequest("the OTP incorrect.");
-            }
             
             var result = await _authService.RegisterAsync(model);
 
@@ -125,7 +123,7 @@ namespace BugDetectorGP.Controllers
             return Ok("Logout successful");
         }
 
-        /*[HttpPost(" GenerateAnOTPForForgotPassword")]
+        [HttpPost("GenerateAnOTPForForgotPassword")]
         public async Task<IActionResult> GenerateAnOTPForPassword(GenerateAnOTPDto model)
         {
             if (model.email == null)
@@ -134,25 +132,54 @@ namespace BugDetectorGP.Controllers
             if (await _userManager.FindByEmailAsync(model.email) is null)
                 return BadRequest("Email is not registered !");
 
-            long x = -1;
-            if (ForgotPasswordAndOTP.TryGetValue(model.email, out x)!)
-            {
+            if (ForgotPasswordAndOTP.ContainsKey(model.email)==true)
                 return Ok("This email have OTP");
-            }
 
             int otp = new Random().Next(100000, 999999);
 
-            string SendEmailStatus = SendGridEmailSender.SendEmail(model.email, otp);
+            string SendEmailStatus =await SendGridEmailSender.SendEmail(model.email, "OTP for ForgotPassword verification", "Your OTP is: " + otp);
 
-            if (SendEmailStatus != Task<"Email sent successfully.">)
-            {
-                return BadRequest("Failed to send OTP :"+SendEmailStatus);
-            }
+            if (SendEmailStatus != "Email sent successfully.")
+                return BadRequest("Failed to send OTP: " + SendEmailStatus);
 
             ForgotPasswordAndOTP.Add(model.email, otp);
-            return Ok(sendemail);
-        }*/
-        private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
+            return Ok("OTP and " + SendEmailStatus);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(model);
+
+            if (await _userManager.FindByEmailAsync(model.Email) is null)
+                return BadRequest("Email is not registered !");
+
+            if (ForgotPasswordAndOTP.ContainsKey(model.Email) == false)
+                return BadRequest("This email dosn\'t have OTP. ");
+
+            if (ForgotPasswordAndOTP[model.Email] != model.OTP)
+                return BadRequest("the OTP incorrect.");
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            _passwordHasher.HashPassword(user,model.Password);
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Empty;
+
+                foreach (var error in result.Errors)
+                    errors += $"{error.Description},";
+
+                return BadRequest(errors);
+            }
+            return Ok("Password change successful.");
+        }
+
+
+    private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
         {
             var cookieOptions = new CookieOptions
             {

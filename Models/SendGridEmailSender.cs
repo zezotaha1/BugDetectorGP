@@ -18,7 +18,6 @@ public class SendGridEmailSender
 
         var from = new EmailAddress("bugdetector8@gmail.com", "BugDetector"); // Replace with your sender email and name
         var to = new EmailAddress(email);
-        var htmlContent = "<strong>BugDetector</strong>"; // Optional HTML content
 
         var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, null);
 
