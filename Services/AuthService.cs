@@ -58,6 +58,7 @@ namespace BugDetectorGP.Services
 
             return new AuthModel
             {
+                message = "Register successful",
                 Email = user.Email,
                 ExpireOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
