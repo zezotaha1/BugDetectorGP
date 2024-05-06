@@ -4,7 +4,7 @@ using SendGrid.Helpers.Mail.Model;
 
 public class SendGridEmailSender
 {
-    private static string key = "";
+    private static string key = "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";
 
 
     public static async Task<string> SendEmail(string email, string subject, string plainTextContent)
