@@ -24,8 +24,8 @@ namespace BugDetectorGP.Controllers
         private readonly IAuthService _authService;
         private readonly UserManager<UserInfo> _userManager;
         private readonly IPasswordHasher<UserInfo> _passwordHasher;
-        private Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> { };
-        private Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> { };
+        private static Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> { };
+        private static Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> { {"__",-1}};
 
         public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher)
         {
@@ -43,7 +43,6 @@ namespace BugDetectorGP.Controllers
             if (await _userManager.FindByEmailAsync(model.email) is not null)
                 return BadRequest("Email is already registered!") ;
             
-            long x = -1;
             if (EmailAndOTP.ContainsKey(model.email)==true)
             {
                 return Ok("This email have OTP");
@@ -175,6 +174,7 @@ namespace BugDetectorGP.Controllers
 
                 return BadRequest(errors);
             }
+            ForgotPasswordAndOTP.Remove(model.Email);
             return Ok("Password change successful.");
         }
 
