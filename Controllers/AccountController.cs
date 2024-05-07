@@ -14,6 +14,7 @@ using System.Text;
 using static System.Net.WebRequestMethods;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace BugDetectorGP.Controllers
 {
@@ -122,6 +123,27 @@ namespace BugDetectorGP.Controllers
             return Ok("Logout successful");
         }
 
+        [Authorize]
+        [HttpGet("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(model);
+
+            var userProfile = await GetUserProfile();
+            var user = await _userManager.FindByEmailAsync(userProfile.Email);
+            if (await _userManager.CheckPasswordAsync(user, model.OldPassword) == false)
+            {
+                return BadRequest("The old Password incorrect!");
+            }
+
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+            var result = await _userManager.UpdateAsync(user);
+
+            return Ok("Password change successful.");
+        }
+
         [HttpPost("GenerateAnOTPForForgotPassword")]
         public async Task<IActionResult> GenerateAnOTPForPassword(GenerateAnOTPDto model)
         {
@@ -179,7 +201,7 @@ namespace BugDetectorGP.Controllers
         }
 
 
-    private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
+        private void SetRefreshTokenInCooke(string refreshtoken,DateTime expire)
         {
             var cookieOptions = new CookieOptions
             {
@@ -192,6 +214,27 @@ namespace BugDetectorGP.Controllers
 
             Response.Cookies.Append("refreshToken", refreshtoken, cookieOptions);
         }
-       
+
+        public async Task<AuthModel> GetUserProfile()
+        {
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                return new AuthModel
+                {
+                    message = "User ID not found in token.",
+                    IsAuthenticated = false
+
+                };
+            }
+            return new AuthModel
+            {
+                UserName = userName,
+                Email = userEmail
+            };
+        }
+
     }
 }
