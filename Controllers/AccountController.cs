@@ -124,7 +124,7 @@ namespace BugDetectorGP.Controllers
         }
 
         [Authorize]
-        [HttpGet("ChangePassword")]
+        [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto model)
         {
             if (!ModelState.IsValid)
@@ -215,6 +215,8 @@ namespace BugDetectorGP.Controllers
             Response.Cookies.Append("refreshToken", refreshtoken, cookieOptions);
         }
 
+        [Authorize]
+        [HttpGet("profile")]
         public async Task<AuthModel> GetUserProfile()
         {
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -12,7 +12,7 @@ namespace BugDetectorGP.Dto
         public string NewPassword { get; set; }
 
         [Required]
-        [Compare("Password")]
+        [Compare("NewPassword")]
         public string ConfirmNewPassword { get; set; }
 
     }
