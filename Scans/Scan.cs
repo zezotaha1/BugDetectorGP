@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BugDetectorGP.Models;
+using NuGet.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,13 +54,13 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<List<List<string>>> _Scan (string targit)
+        public async Task<string> _Scan (string targit)
         {
             var files = Directory.GetFiles(folderPath);
             var result = "";
             foreach (var file in files)
             {
-                string command = "bash " +file + " " + targit;
+                string command = "bash " + file + " " + targit;
 
                 try
                 {
@@ -87,27 +89,31 @@ namespace BugDetectorGP.Scans
                 {
                     result += $"Error: {ex.Message}";
                 }
-                
             }
 
+            return result;
+        }
+
+        public async static Task<List<List<string>>> ReturnWebOrNetworkReport(string ReportResult)
+        {
             List<List<string>> _output = new List<List<string>>();
-            
-            for (int i = 0; i < result.Length; i++)
+
+            for (int i = 0; i < ReportResult.Length; i++)
             {
                 string title = "", details = "", output = "";
 
-                while ( i < result.Length && result[i] == '#') { i++; continue; }
-                while ( i < result.Length && result[i] != '#') { title += result[i]; i++; continue; }
-                while ( i < result.Length && result[i] == '#') { i++; continue; }
-                while ( i < result.Length && result[i] != '#') { details += result[i]; i++; continue; }
-                while ( i < result.Length && result[i] == '#') { i++; continue; }
-                while ( i < result.Length && result[i] != '#') { output += result[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '#') { title += ReportResult[i]; i++; continue; }    
+                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '#') { details += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '#') { output += ReportResult[i]; i++; continue; }
 
                 _output.Add(new List<string> { title, details, output });
             }
-            
+
             return _output;
         }
-        
+
     }
 }

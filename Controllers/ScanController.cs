@@ -1,13 +1,16 @@
 ﻿using BugDetectorGP.Dto;
 using BugDetectorGP.Models;
+using BugDetectorGP.Models.user;
 using BugDetectorGP.Scans;
 using BugDetectorGP.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace BugDetectorGP.Controllers
 {
@@ -20,14 +23,23 @@ namespace BugDetectorGP.Controllers
         private Scan _PremiumWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumWebScan")));
         private Scan _FreeNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "FreeNetworkScan")));
         private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
+        private readonly ApplicationDbContext _Context;
+        private readonly UserManager<UserInfo> _userManager;
 
-        
+        public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
+        {
+            _Context = Context;
+            _userManager = userManager;
+        }
+
         [HttpPost("FreeWebScan")]
 
         public async Task<ScanResult> FreeWebScan(WebScan model)
         {
+            var result = await _FreeWebScan._Scan(model.url);
+            await SaveReport(result, model.url, "WebScan");
             return new ScanResult()
-            { result = await _FreeWebScan._Scan(model.url) };
+            { result = await Scan.ReturnWebOrNetworkReport( result) };
         }
 
 
@@ -35,8 +47,11 @@ namespace BugDetectorGP.Controllers
 
         public async Task<ScanResult> FreeNetworkScan(WebScan model)
         {
+            var result = await _FreeNetworkScan._Scan(model.url);
+
+            await SaveReport(result, model.url, "NetworkScan");
             return new ScanResult()
-            { result = await _FreeNetworkScan._Scan(model.url) };
+            { result = await Scan.ReturnWebOrNetworkReport(result) };
         }
 
 
@@ -44,8 +59,12 @@ namespace BugDetectorGP.Controllers
 
         public async Task<ScanResult> PremiumWebScan(WebScan model)
         {
+            var result = await _PremiumWebScan._Scan(model.url);
+
+            await SaveReport(result, model.url, "WebScan");
+
             return new ScanResult()
-            { result = await _PremiumWebScan._Scan(model.url) };
+            { result = await Scan.ReturnWebOrNetworkReport(result) };
         }
 
 
@@ -53,11 +72,50 @@ namespace BugDetectorGP.Controllers
 
         public async Task<ScanResult> PremiumNetworkScan(WebScan model)
         {
-            return new ScanResult()
-            { result = await _PremiumNetworkScan._Scan(model.url) };
-        }
-        
+            var result = await _PremiumNetworkScan._Scan(model.url);
 
-    
+            await SaveReport(result, model.url, "NetworkScan");
+            return new ScanResult()
+            { result = await Scan.ReturnWebOrNetworkReport(result) };
+        }
+
+        [HttpGet("profile")]
+        public async Task<AuthModel> GetUserProfile()
+        {
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                return new AuthModel
+                {
+                    message = "User ID not found in token.",
+                    IsAuthenticated = false
+
+                };
+            }
+            return new AuthModel
+            {
+                UserName = userName,
+                Email = userEmail
+            };
+        }
+
+        private async Task<bool> SaveReport(string result ,string target,string type)
+        {
+            var report = new Reports();
+
+            report.Result = result;
+            report.Target = target;
+            report.Type = type;
+
+            var UserProfile = await GetUserProfile();
+            var user = await _userManager.FindByEmailAsync(UserProfile.Email);
+            report.UserId = user.Id;
+            _Context.Reports.Add(report);
+            _Context.SaveChanges();
+            return true;
+        }
+
     }
 }
