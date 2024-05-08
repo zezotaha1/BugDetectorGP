@@ -164,9 +164,12 @@ namespace BugDetectorGP.Controllers
                 blog.LikeNumber += 1;
                 blog.DislikeNumber -= 1;
                 _Context.SaveChanges();
-                return Ok();
+                return Ok("Like added");
             }
-            return Ok("You Are Liked");
+            blog.LikeNumber -= 1;
+            _Context.LikesAndDislikes.Remove(findBlogLike);
+            _Context.SaveChanges();
+            return Ok("Your Like removed");
 
         }
         [HttpGet("DisLike")]
@@ -198,9 +201,12 @@ namespace BugDetectorGP.Controllers
                 blog.DislikeNumber += 1;
                 blog.LikeNumber -= 1;
                 _Context.SaveChanges();
-                return Ok();
+                return Ok("Dislike added");
             }
-            return Ok("You Are DisLiked");
+            blog.DislikeNumber -= 1;
+            _Context.LikesAndDislikes.Remove(findBlogLike);
+            _Context.SaveChanges();
+            return Ok("Your Like removed");
         }
         [HttpPost("Comment")]
         public async Task<IActionResult> AddCommentToBlog(CommentDto model)
