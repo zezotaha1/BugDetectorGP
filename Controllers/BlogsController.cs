@@ -245,5 +245,11 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("Comment are Deleted");
         }
+        [HttpGet("Search")]
+        public async Task<IActionResult>SearchInBlogs(SearchDTO model)
+        {
+
+            return Ok();
+        }
     }
 }

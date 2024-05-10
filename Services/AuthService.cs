@@ -118,7 +118,7 @@ namespace BugDetectorGP.Services
             if (!refreshToken.IsActive)
                 return false;
 
-            refreshToken.RevokedOn = DateTime.UtcNow;
+            refreshToken.RevokedOn = DateTime.UtcNow.ToLocalTime();
             await _userManager.UpdateAsync(user);
             return true;
         }
