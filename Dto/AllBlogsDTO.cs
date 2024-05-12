@@ -2,6 +2,7 @@
 {
     public class AllBlogsDTO
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string UsrName { get; set; }

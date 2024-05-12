@@ -123,7 +123,8 @@ namespace BugDetectorGP.Controllers
                {
                 var UserData =await _Context.Users.SingleOrDefaultAsync(u => u.Id == blog.UserId);
                 var temp = new AllBlogsDTO
-                { 
+                {
+                    Id=blog.BlogId,
                     Title = blog.Title,
                     Content = blog.Content,            
                     UsrName = UserData.UserName,
@@ -143,9 +144,12 @@ namespace BugDetectorGP.Controllers
             AuthModel userinfo = await GetUserProfile();
             var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            
             if (blog == null)
                 return BadRequest("Blog Not Found");
+           
             var findBlogLike=await _Context.LikesAndDislikes.SingleOrDefaultAsync(b => ( b.BlogId == model.Blogid && b.UserId == findUser.Id ));
+            
             if(findBlogLike==null )
             {
                 var LikeBlog = new LikesAndDislikes();
@@ -172,6 +176,7 @@ namespace BugDetectorGP.Controllers
             return Ok("Your Like removed");
 
         }
+
         [HttpGet("DisLike")]
         public async Task<IActionResult> DisLikeToBlog(BlogLikeAndDisLikeDTO model)
         {
@@ -208,6 +213,7 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("Your Like removed");
         }
+
         [HttpPost("Comment")]
         public async Task<IActionResult> AddCommentToBlog(CommentDto model)
         {
@@ -245,6 +251,7 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("Comment are Deleted");
         }
+
         [HttpGet("Search")]
         public async Task<IActionResult>SearchInBlogs(SearchDTO model)
         {
