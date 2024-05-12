@@ -17,7 +17,7 @@ namespace BugDetectorGP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class BlogsController : ControllerBase
     {
         private readonly ApplicationDbContext _Context;
