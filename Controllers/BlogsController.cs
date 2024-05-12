@@ -167,10 +167,12 @@ namespace BugDetectorGP.Controllers
                 findBlogLike.LikeOrDislike = true;
                 blog.LikeNumber += 1;
                 blog.DislikeNumber -= 1;
+                blog.DislikeNumber = int.Max(0, blog.DislikeNumber);
                 _Context.SaveChanges();
                 return Ok("Like added");
             }
             blog.LikeNumber -= 1;
+            blog.LikeNumber = int.Max(0, blog.LikeNumber);
             _Context.LikesAndDislikes.Remove(findBlogLike);
             _Context.SaveChanges();
             return Ok("Your Like removed");
@@ -204,10 +206,12 @@ namespace BugDetectorGP.Controllers
                 findBlogLike.LikeOrDislike = false;
                 blog.DislikeNumber += 1;
                 blog.LikeNumber -= 1;
+                blog.LikeNumber=int.Max(0,blog.LikeNumber);
                 _Context.SaveChanges();
                 return Ok("Dislike added");
             }
             blog.DislikeNumber -= 1;
+            blog.DislikeNumber=int.Max(0,blog.DislikeNumber) ;
             _Context.LikesAndDislikes.Remove(findBlogLike);
             _Context.SaveChanges();
             return Ok("Your DisLike removed");
