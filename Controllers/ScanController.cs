@@ -16,7 +16,7 @@ namespace BugDetectorGP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ScanController : ControllerBase
     {
         private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
@@ -37,9 +37,11 @@ namespace BugDetectorGP.Controllers
         public async Task<ScanResult> FreeWebScan(WebScan model)
         {
             var result = await _FreeWebScan._Scan(model.url);
-            await SaveReport(result, model.url, "WebScan");
+            //await SaveReport(result, model.url, "WebScan");
             return new ScanResult()
-            { result = await Scan.ReturnWebOrNetworkReport( result) };
+            { 
+                result = await Scan.ReturnWebOrNetworkReport( result) 
+            };
         }
 
 
@@ -49,7 +51,7 @@ namespace BugDetectorGP.Controllers
         {
             var result = await _FreeNetworkScan._Scan(model.url);
 
-            await SaveReport(result, model.url, "NetworkScan");
+            //await SaveReport(result, model.url, "NetworkScan");
             return new ScanResult()
             { result = await Scan.ReturnWebOrNetworkReport(result) };
         }
@@ -61,7 +63,7 @@ namespace BugDetectorGP.Controllers
         {
             var result = await _PremiumWebScan._Scan(model.url);
 
-            await SaveReport(result, model.url, "WebScan");
+            //await SaveReport(result, model.url, "WebScan");
 
             return new ScanResult()
             { result = await Scan.ReturnWebOrNetworkReport(result) };
@@ -74,7 +76,7 @@ namespace BugDetectorGP.Controllers
         {
             var result = await _PremiumNetworkScan._Scan(model.url);
 
-            await SaveReport(result, model.url, "NetworkScan");
+            //await SaveReport(result, model.url, "NetworkScan");
             return new ScanResult()
             { result = await Scan.ReturnWebOrNetworkReport(result) };
         }

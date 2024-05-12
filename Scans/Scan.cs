@@ -1,4 +1,5 @@
-﻿using BugDetectorGP.Models;
+﻿using BugDetectorGP.Dto;
+using BugDetectorGP.Models;
 using NuGet.Protocol;
 using System;
 using System.Collections.Generic;
@@ -94,9 +95,9 @@ namespace BugDetectorGP.Scans
             return result;
         }
 
-        public async static Task<List<List<string>>> ReturnWebOrNetworkReport(string ReportResult)
+        public async static Task<List<ReportDto>> ReturnWebOrNetworkReport(string ReportResult)
         {
-            List<List<string>> _output = new List<List<string>>();
+            List<ReportDto> _output = new List<ReportDto>();
 
             for (int i = 0; i < ReportResult.Length; i++)
             {
@@ -109,7 +110,12 @@ namespace BugDetectorGP.Scans
                 while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
                 while (i < ReportResult.Length && ReportResult[i] != '#') { output += ReportResult[i]; i++; continue; }
 
-                _output.Add(new List<string> { title, details, output });
+                _output.Add(new ReportDto 
+                { 
+                    title=title, 
+                    details=details, 
+                    output=output 
+                });
             }
 
             return _output;
