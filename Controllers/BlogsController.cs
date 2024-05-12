@@ -112,7 +112,7 @@ namespace BugDetectorGP.Controllers
             }
             return BadRequest("You dont Acsess this Blog");
         }
-        [HttpGet("ReturnAllBlogs")]
+        [HttpPost("ReturnAllBlogs")]
         public async Task<IActionResult> ReturnAllBlogs()
         {
            var listBlog=_Context.Blogs.ToList();
@@ -136,7 +136,7 @@ namespace BugDetectorGP.Controllers
                }
             return Ok(AllBlogs);
         }
-        [HttpGet("Like")]
+        [HttpPost("Like")]
         public async Task<IActionResult>LikeToBlog(BlogLikeAndDisLikeDTO model)
         {
             if(!ModelState.IsValid)
@@ -178,7 +178,7 @@ namespace BugDetectorGP.Controllers
             return Ok("Your Like removed");
         }
 
-        [HttpGet("DisLike")]
+        [HttpPost("DisLike")]
         public async Task<IActionResult> DisLikeToBlog(BlogLikeAndDisLikeDTO model)
         {
             if (!ModelState.IsValid)
@@ -255,7 +255,7 @@ namespace BugDetectorGP.Controllers
             return Ok("Comment are Deleted");
         }
 
-        [HttpGet("Search")]
+        [HttpPost("Search")]
         public async Task<IActionResult>SearchInBlogs(SearchDTO model)
         {
 
