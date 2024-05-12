@@ -255,6 +255,32 @@ namespace BugDetectorGP.Controllers
             return Ok("Comment are Deleted");
         }
 
+        [HttpPost("ReturnOneBlog")]
+        public async Task<IActionResult> ReturnOneBlog (BlogLikeAndDisLikeDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+
+            var UserData = await _Context.Users.SingleOrDefaultAsync(u => u.Id == blog.UserId);
+            var temp = new AllBlogsDTO
+            {
+                Id = blog.BlogId,
+                Title = blog.Title,
+                Content = blog.Content,
+                UsrName = UserData.UserName,
+                PublicationDate = blog.PublicationDate,
+                NumberOfDisLikes = blog.DislikeNumber,
+                NumberOfLikes = blog.LikeNumber
+            };
+            
+            return Ok(temp);
+        }
+
+
         [HttpPost("Search")]
         public async Task<IActionResult>SearchInBlogs(SearchDTO model)
         {
