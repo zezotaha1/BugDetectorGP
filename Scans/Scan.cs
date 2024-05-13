@@ -91,7 +91,7 @@ namespace BugDetectorGP.Scans
                     result += $"Error: {ex.Message}";
                 }
             }
-
+            result = result.Replace("\n", "").Replace("\t", "");
             return result;
         }
 
@@ -120,6 +120,5 @@ namespace BugDetectorGP.Scans
 
             return _output;
         }
-
     }
 }
