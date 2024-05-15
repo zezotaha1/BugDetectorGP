@@ -91,7 +91,7 @@ namespace BugDetectorGP.Scans
                     result += $"Error: {ex.Message}";
                 }
             }
-            result = result.Replace("\n", "").Replace("\t", "");
+            result = result.Replace("<br>", "").Replace("\t", "");
             return result;
         }
 
