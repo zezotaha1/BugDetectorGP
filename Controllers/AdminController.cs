@@ -39,11 +39,11 @@ namespace BugDetectorGP.Controllers
             return Ok("New Blog a");
          }
         [HttpDelete("DeleteBlog")]
-        public async Task<IActionResult> DeleteBlog(BlogLikeAndDisLikeDTO model)
+        public async Task<IActionResult> DeleteBlog(BlogIdDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.Blogid);
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)
                 return BadRequest("Blog Not Found");
          

@@ -22,18 +22,19 @@ namespace BugDetectorGP.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private static Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> {};
+        private static Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> {};
         private readonly IAuthService _authService;
-        private readonly UserManager<UserInfo> _userManager;
         private readonly IPasswordHasher<UserInfo> _passwordHasher;
-        private static Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> { };
-        private static Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> { {"__",-1}};
+        private readonly UserManager<UserInfo> _userManager;
+        private readonly ProfileDataController _ProfileData;
 
-        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher)
+        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher,ProfileDataController profileData)
         {
             this._authService = authService;
             this._userManager = _userManager;
             this._passwordHasher = _passwordHasher;
-
+            _ProfileData = profileData;
         }
         [HttpPost("GenerateAnOTP")]
         public async Task<IActionResult> GenerateAnOTP(GenerateAnOTPDto model)
@@ -130,7 +131,7 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(model);
 
-            var userProfile = await GetUserProfile();
+            var userProfile = await _ProfileData.GetUserProfile();
             var user = await _userManager.FindByEmailAsync(userProfile.Email);
             if (await _userManager.CheckPasswordAsync(user, model.OldPassword) == false)
             {
@@ -213,29 +214,6 @@ namespace BugDetectorGP.Controllers
             };
 
             Response.Cookies.Append("refreshToken", refreshtoken, cookieOptions);
-        }
-
-        [Authorize]
-        [HttpGet("profile")]
-        public async Task<AuthModel> GetUserProfile()
-        {
-            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                return new AuthModel
-                {
-                    message = "User ID not found in token.",
-                    IsAuthenticated = false
-
-                };
-            }
-            return new AuthModel
-            {
-                UserName = userName,
-                Email = userEmail
-            };
         }
 
     }

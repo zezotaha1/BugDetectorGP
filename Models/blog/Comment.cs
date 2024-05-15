@@ -13,6 +13,10 @@ namespace BugDetectorGP.Models.blog
 
         public DateTime PublicationDate { get; set; }
 
+        public int LikeNumber { get; set; } = 0;
+
+        public int DislikeNumber { get; set; } = 0;
+
         public int BlogId { get; set; }
 
         public string UserId { get; set; }

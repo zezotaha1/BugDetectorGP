@@ -2,9 +2,9 @@
 
 namespace BugDetectorGP.Dto
 {
-    public class BlogLikeAndDisLikeDTO
+    public class CommentIdDTO
     {
         [Required]
-        public int Blogid { get; set; }
+        public int CommentId { get; set; }
     }
 }

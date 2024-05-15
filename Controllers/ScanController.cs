@@ -25,11 +25,13 @@ namespace BugDetectorGP.Controllers
         private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
+        private readonly ProfileDataController _ProfileData;
 
-        public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
+        public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager, ProfileDataController profileData)
         {
             _Context = Context;
             _userManager = userManager;
+            _ProfileData = profileData;
         }
 
         [HttpPost("FreeWebScan")]
@@ -81,27 +83,6 @@ namespace BugDetectorGP.Controllers
             { result = await Scan.ReturnWebOrNetworkReport(result) };
         }
 
-        [HttpGet("profile")]
-        public async Task<AuthModel> GetUserProfile()
-        {
-            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                return new AuthModel
-                {
-                    message = "User ID not found in token.",
-                    IsAuthenticated = false
-
-                };
-            }
-            return new AuthModel
-            {
-                UserName = userName,
-                Email = userEmail
-            };
-        }
 
         private async Task<bool> SaveReport(string result ,string target,string type)
         {
@@ -111,7 +92,7 @@ namespace BugDetectorGP.Controllers
             report.Target = target;
             report.Type = type;
 
-            var UserProfile = await GetUserProfile();
+            var UserProfile = await _ProfileData.GetUserProfile();
             var user = await _userManager.FindByEmailAsync(UserProfile.Email);
             report.UserId = user.Id;
             _Context.Reports.Add(report);
