@@ -20,15 +20,14 @@ namespace BugDetectorGP.Controllers
    // [Authorize]
     public class BlogsController : ControllerBase
     {
+        private static ProfileDataController _ProfileData = new ProfileDataController();
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
-        private readonly ProfileDataController _ProfileData;
 
-        public BlogsController(ApplicationDbContext Context, UserManager<UserInfo> userManager,ProfileDataController profileData)
+        public BlogsController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
         {
             _Context = Context;
             _userManager = userManager;
-            _ProfileData = profileData;
         }
         
         [HttpPost("AddBlog")]

@@ -24,17 +24,16 @@ namespace BugDetectorGP.Controllers
     {
         private static Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> {};
         private static Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> {};
+        private static ProfileDataController _ProfileData=new ProfileDataController();
         private readonly IAuthService _authService;
         private readonly IPasswordHasher<UserInfo> _passwordHasher;
         private readonly UserManager<UserInfo> _userManager;
-        private readonly ProfileDataController _ProfileData;
 
-        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher,ProfileDataController profileData)
+        public AccountController(IAuthService authService, UserManager<UserInfo> _userManager, IPasswordHasher<UserInfo> _passwordHasher)
         {
             this._authService = authService;
             this._userManager = _userManager;
             this._passwordHasher = _passwordHasher;
-            _ProfileData = profileData;
         }
         [HttpPost("GenerateAnOTP")]
         public async Task<IActionResult> GenerateAnOTP(GenerateAnOTPDto model)

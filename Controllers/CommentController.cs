@@ -19,14 +19,13 @@ namespace BugDetectorGP.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
+        private static ProfileDataController _ProfileData = new ProfileDataController();
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
-        private readonly ProfileDataController _ProfileData;
 
-        public CommentController(ApplicationDbContext Context, ProfileDataController profileData, UserManager<UserInfo> userManager)
+        public CommentController(ApplicationDbContext Context , UserManager<UserInfo> userManager)
         {
             _Context = Context;
-            _ProfileData = profileData;
             _userManager = userManager;
         }
 

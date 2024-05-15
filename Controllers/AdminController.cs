@@ -16,6 +16,7 @@ namespace BugDetectorGP.Controllers
     [Authorize("Admin")]
     public class AdminController : ControllerBase
     {
+        private static ProfileDataController _ProfileData = new ProfileDataController();
         private readonly ApplicationDbContext _Context;
         public AdminController(ApplicationDbContext Context)
         {

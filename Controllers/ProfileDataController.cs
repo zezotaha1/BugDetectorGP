@@ -1,8 +1,10 @@
-﻿using BugDetectorGP.Models.user;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using BugDetectorGP.Dto;
+using BugDetectorGP.Models.user;
 
 namespace BugDetectorGP.Controllers
 {
@@ -28,6 +30,7 @@ namespace BugDetectorGP.Controllers
 
             return BadRequest("Token not found in the authorization header.");
         }
+
         [HttpGet("profile")]
         public async Task<AuthModel> GetUserProfile()
         {
@@ -40,9 +43,9 @@ namespace BugDetectorGP.Controllers
                 {
                     message = "User ID not found in token.",
                     IsAuthenticated = false
-
                 };
             }
+
             return new AuthModel
             {
                 UserName = userName,
@@ -54,7 +57,6 @@ namespace BugDetectorGP.Controllers
         public IActionResult IsAdmin()
         {
             var isAdmin = User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-
             return Ok(isAdmin);
         }
     }

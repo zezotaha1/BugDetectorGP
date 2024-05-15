@@ -25,13 +25,12 @@ namespace BugDetectorGP.Controllers
         private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
-        private readonly ProfileDataController _ProfileData;
+        private static ProfileDataController _ProfileData = new ProfileDataController();
 
-        public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager, ProfileDataController profileData)
+        public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
         {
             _Context = Context;
             _userManager = userManager;
-            _ProfileData = profileData;
         }
 
         [HttpPost("FreeWebScan")]
