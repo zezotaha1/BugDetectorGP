@@ -19,13 +19,13 @@ namespace BugDetectorGP.Controllers
     //[Authorize]
     public class ScanController : ControllerBase
     {
+        private static ProfileDataController _ProfileData = new ProfileDataController();
         private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
         private Scan _PremiumWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumWebScan")));
         private Scan _FreeNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "FreeNetworkScan")));
         private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
-        private static ProfileDataController _ProfileData = new ProfileDataController();
 
         public ScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
         {
@@ -35,53 +35,113 @@ namespace BugDetectorGP.Controllers
 
         [HttpPost("FreeWebScan")]
 
-        public async Task<ScanResult> FreeWebScan(WebScan model)
+        public async Task<IActionResult> FreeWebScan(WebScan model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _FreeWebScan._Scan(model.url);
             //await SaveReport(result, model.url, "WebScan");
-            return new ScanResult()
-            { 
-                result = await Scan.ReturnWebOrNetworkReport( result) 
-            };
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(result)
+            });
         }
 
 
         [HttpPost("FreeNetworkScan")]
 
-        public async Task<ScanResult> FreeNetworkScan(WebScan model)
+        public async Task<IActionResult> FreeNetworkScan(WebScan model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _FreeNetworkScan._Scan(model.url);
 
             //await SaveReport(result, model.url, "NetworkScan");
-            return new ScanResult()
-            { result = await Scan.ReturnWebOrNetworkReport(result) };
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(result)
+            });
         }
 
 
         [HttpPost("PremiumWebScan")]
 
-        public async Task<ScanResult> PremiumWebScan(WebScan model)
+        public async Task<IActionResult> PremiumWebScan(WebScan model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _PremiumWebScan._Scan(model.url);
 
             //await SaveReport(result, model.url, "WebScan");
 
-            return new ScanResult()
-            { result = await Scan.ReturnWebOrNetworkReport(result) };
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(result)
+            });
         }
 
 
         [HttpPost("PremiumNetworkScan")]
 
-        public async Task<ScanResult> PremiumNetworkScan(WebScan model)
+        public async Task<IActionResult> PremiumNetworkScan(WebScan model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _PremiumNetworkScan._Scan(model.url);
 
             //await SaveReport(result, model.url, "NetworkScan");
-            return new ScanResult()
-            { result = await Scan.ReturnWebOrNetworkReport(result) };
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(result)
+            });
         }
 
+        [HttpPost("ReturnReportsForUser")]
+        public async Task<IActionResult> ReturnReportsForUser()
+        {
+            var userProfile = await _ProfileData.GetUserProfile();
+            var findUser = await _userManager.FindByNameAsync(userProfile.UserName);
+            var reportlist = _Context.Reports.ToList().Where(R=>R.UserId==findUser.Id);
+            var returnReports = new List<ReportsInfoDTO>() { };
+            foreach(var report in reportlist)
+            {
+                returnReports.Add(new ReportsInfoDTO()
+                {
+                    ReportId=report.ReportId,
+                    Targit=report.Target,
+                    Type=report.Type,
+                    DateTime=report.PublicationDate,
+                });
+            }
+            return Ok(returnReports);
+        }
+
+        [HttpPost("ReturnOneReport")]
+        public async Task<IActionResult> ReturnOneReport(ReportIdDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userProfile =await _ProfileData.GetUserProfile();
+            var finduser = await _userManager.FindByEmailAsync(userProfile.Email);
+
+            var report = await _Context.Reports.SingleOrDefaultAsync(R => R.ReportId == model.Id);
+
+            if (report == null)
+                return BadRequest("The Report Not Found");
+            
+            if (report.UserId != finduser.Id)
+                return BadRequest("You are not allowed to see this Report!");
+            
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(report.Result)
+            });
+        }
 
         private async Task<bool> SaveReport(string result ,string target,string type)
         {
@@ -94,6 +154,7 @@ namespace BugDetectorGP.Controllers
             var UserProfile = await _ProfileData.GetUserProfile();
             var user = await _userManager.FindByEmailAsync(UserProfile.Email);
             report.UserId = user.Id;
+            report.PublicationDate = DateTime.Now.ToLocalTime();
             _Context.Reports.Add(report);
             _Context.SaveChanges();
             return true;

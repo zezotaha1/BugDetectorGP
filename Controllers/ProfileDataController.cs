@@ -14,7 +14,7 @@ namespace BugDetectorGP.Controllers
     public class ProfileDataController : ControllerBase
     {
         [HttpGet("current-token")]
-        public IActionResult GetCurrentToken()
+        public async Task<IActionResult> GetCurrentToken()
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
