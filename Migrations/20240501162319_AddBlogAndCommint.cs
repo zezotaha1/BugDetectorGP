@@ -56,13 +56,13 @@ namespace BugDetectorGP.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict); // Change this to ReferentialAction.Restrict
+                        onDelete: ReferentialAction.Cascade); // Change this to ReferentialAction.Restrict
                     table.ForeignKey(
                         name: "FK_Comment_Blogs_BlogId",
                         column: x => x.BlogId,
                         principalTable: "Blogs",
                         principalColumn: "BlogId",
-                        onDelete: ReferentialAction.Restrict); // Change this to ReferentialAction.Restrict
+                        onDelete: ReferentialAction.Cascade); // Change this to ReferentialAction.Restrict
                 });
 
             // Migration code...

@@ -49,18 +49,26 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("New Blog are added");
         }
+        [Authorize]
         [HttpDelete("DeleteBlog")]
         public async Task<IActionResult> DeleteBlog(BlogIdDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             AuthModel userinfo = await _ProfileData.GetUserProfile();
+     
             var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)
                 return BadRequest("Blog Not Found");
             if(blog.UserId == findUser.Id)
             {
+                 var allcomment=_Context.Comment.Where(b=>b.BlogId== model.BlogId);
+               foreach(var comment in allcomment)
+                {
+                    _Context.Comment.Remove(comment);
+                }
+               _Context.SaveChanges();
                 _Context.Blogs.Remove(blog);
                 _Context.SaveChanges();
                 return Ok("Blog are Deleted");
@@ -70,9 +78,7 @@ namespace BugDetectorGP.Controllers
         [HttpPost("ReturnAllBlogs")]
         public async Task<IActionResult> ReturnAllBlogs()
         {
-            var listBlog=_Context.Blogs.ToList();
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            
+            var listBlog=_Context.Blogs.ToList();            
             var AllBlogs = new List<AllBlogsDTO>();
             foreach(var  blog in listBlog)
             {
