@@ -19,7 +19,6 @@ namespace BugDetectorGP.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private static ProfileDataController _ProfileData = new ProfileDataController();
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
 
@@ -58,11 +57,19 @@ namespace BugDetectorGP.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)
                 return BadRequest("Blog Not Found");
+
             var addcomment = new Comment();
             addcomment.PublicationDate = DateTime.Now.ToLocalTime();
             addcomment.Content = model.Comment;
@@ -70,7 +77,7 @@ namespace BugDetectorGP.Controllers
             addcomment.BlogId = model.BlogId;
             _Context.Comment.Add(addcomment);
             _Context.SaveChanges();
-            return Ok(addcomment);
+            return Ok("New Comment is added");
         }
 
         [HttpDelete("DeleteComment")]
@@ -78,17 +85,28 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             var comment = await _Context.Comment.SingleOrDefaultAsync(c => c.CommentId == model.CommentId);
+
             if (blog == null || comment == null)
                 return BadRequest("Blog or Comment Not Found");
+
             if (comment.UserId != findUser.Id)
-                return BadRequest("you Dont Remove this Comment");
+                return BadRequest("You Dont Have Access remove this Comment");
+
             _Context.Comment.Remove(comment);
             _Context.SaveChanges();
-            return Ok("Comment are Deleted");
+
+            return Ok("Comment is Deleted");
         }
 
         [HttpPost("Like")]
@@ -96,8 +114,15 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var Comment = await _Context.Comment.SingleOrDefaultAsync(u => u.CommentId == model.CommentId);
 
             if (Comment == null)
@@ -138,8 +163,15 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var Comment = await _Context.Comment.SingleOrDefaultAsync(u => u.CommentId == model.CommentId);
 
             if (Comment == null)
@@ -159,9 +191,9 @@ namespace BugDetectorGP.Controllers
                 _Context.SaveChanges();
                 return Ok("Dislike added");
             }
-            if (findCommentLike.LikeOrDislike == false)
+            if (findCommentLike.LikeOrDislike == true)
             {
-                findCommentLike.LikeOrDislike = true;
+                findCommentLike.LikeOrDislike = false;
                 Comment.LikeNumber -= 1;
                 Comment.DislikeNumber += 1;
                 Comment.LikeNumber = int.Max(0, Comment.DislikeNumber);
@@ -172,7 +204,7 @@ namespace BugDetectorGP.Controllers
             Comment.DislikeNumber = int.Max(0, Comment.LikeNumber);
             _Context.LikesAndDislikesForComments.Remove(findCommentLike);
             _Context.SaveChanges();
-            return Ok("Your Like removed");
+            return Ok("Your DisLike removed");
         }
     }
 }

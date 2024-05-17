@@ -17,10 +17,9 @@ namespace BugDetectorGP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize]
+    [Authorize]
     public class BlogsController : ControllerBase
     {
-        private static ProfileDataController _ProfileData = new ProfileDataController();
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
 
@@ -37,44 +36,52 @@ namespace BugDetectorGP.Controllers
             {
                 return BadRequest(ModelState);
             }
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-     
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var NewBlog = new Blogs();
             NewBlog.Title = model.Title;
             NewBlog.Content = model.Content;
             NewBlog.PublicationDate = DateTime.UtcNow.ToLocalTime();
-            var findUser =  await _userManager.FindByNameAsync(userinfo.UserName);
             NewBlog.UserId=findUser.Id;
             _Context.Blogs.Add(NewBlog);
             _Context.SaveChanges();
-            return Ok("New Blog are added");
+            return Ok("New Blog is added");
         }
-        [Authorize]
+
         [HttpDelete("DeleteBlog")]
         public async Task<IActionResult> DeleteBlog(BlogIdDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-     
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)
                 return BadRequest("Blog Not Found");
+
             if(blog.UserId == findUser.Id)
             {
-                 var allcomment=_Context.Comment.Where(b=>b.BlogId== model.BlogId);
-               foreach(var comment in allcomment)
-                {
-                    _Context.Comment.Remove(comment);
-                }
-               _Context.SaveChanges();
                 _Context.Blogs.Remove(blog);
                 _Context.SaveChanges();
                 return Ok("Blog are Deleted");
             }
-            return BadRequest("You dont Acsess this Blog");
+            return BadRequest("You donot have Acsess to remove this Blog");
         }
+
         [HttpPost("ReturnAllBlogs")]
         public async Task<IActionResult> ReturnAllBlogs()
         {
@@ -102,8 +109,15 @@ namespace BugDetectorGP.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             
             if (blog == null)
@@ -144,9 +158,17 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AuthModel userinfo = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userinfo.UserName);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
+
             if (blog == null)
                 return BadRequest("Blog Not Found");
             var findBlogLike = await _Context.LikesAndDislikes.SingleOrDefaultAsync(b => (b.BlogId == model.BlogId && b.UserId == findUser.Id));
@@ -210,5 +232,6 @@ namespace BugDetectorGP.Controllers
 
             return Ok();
         }
+
     }
 }

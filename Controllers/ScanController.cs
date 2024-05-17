@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -19,7 +20,6 @@ namespace BugDetectorGP.Controllers
     //[Authorize]
     public class ScanController : ControllerBase
     {
-        private static ProfileDataController _ProfileData = new ProfileDataController();
         private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
         private Scan _PremiumWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumWebScan")));
         private Scan _FreeNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "FreeNetworkScan")));
@@ -103,8 +103,14 @@ namespace BugDetectorGP.Controllers
         [HttpPost("ReturnReportsForUser")]
         public async Task<IActionResult> ReturnReportsForUser()
         {
-            var userProfile = await _ProfileData.GetUserProfile();
-            var findUser = await _userManager.FindByNameAsync(userProfile.UserName);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             var reportlist = _Context.Reports.ToList().Where(R=>R.UserId==findUser.Id);
             var returnReports = new List<ReportsInfoDTO>() { };
             foreach(var report in reportlist)
@@ -126,15 +132,20 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userProfile =await _ProfileData.GetUserProfile();
-            var finduser = await _userManager.FindByEmailAsync(userProfile.Email);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+            
+            if (findUser == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
 
             var report = await _Context.Reports.SingleOrDefaultAsync(R => R.ReportId == model.Id);
 
             if (report == null)
                 return BadRequest("The Report Not Found");
             
-            if (report.UserId != finduser.Id)
+            if (report.UserId != findUser.Id)
                 return BadRequest("You are not allowed to see this Report!");
             
             return Ok(new ScanResult()
@@ -151,8 +162,8 @@ namespace BugDetectorGP.Controllers
             report.Target = target;
             report.Type = type;
 
-            var UserProfile = await _ProfileData.GetUserProfile();
-            var user = await _userManager.FindByEmailAsync(UserProfile.Email);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByEmailAsync(userName);
             report.UserId = user.Id;
             report.PublicationDate = DateTime.Now.ToLocalTime();
             _Context.Reports.Add(report);

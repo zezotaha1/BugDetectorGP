@@ -24,7 +24,6 @@ namespace BugDetectorGP.Controllers
     {
         private static Dictionary<string, long> EmailAndOTP=new Dictionary<string, long> {};
         private static Dictionary<string, long> ForgotPasswordAndOTP = new Dictionary<string, long> {};
-        private static ProfileDataController _ProfileData=new ProfileDataController();
         private readonly IAuthService _authService;
         private readonly IPasswordHasher<UserInfo> _passwordHasher;
         private readonly UserManager<UserInfo> _userManager;
@@ -130,8 +129,14 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(model);
 
-            var userProfile = await _ProfileData.GetUserProfile();
-            var user = await _userManager.FindByEmailAsync(userProfile.Email);
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByNameAsync(userName);
+            
+            if (user == null)
+            {
+                return BadRequest("You must be login or your username incorrect");
+            }
+
             if (await _userManager.CheckPasswordAsync(user, model.OldPassword) == false)
             {
                 return BadRequest("The old Password incorrect!");

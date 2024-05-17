@@ -24,14 +24,16 @@ namespace BugDetectorGP
             builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 
             // Add services to the container.
-            builder.Services.AddIdentity<UserInfo, IdentityRole>().
-                AddEntityFrameworkStores<ApplicationDbContext>();
+            builder.Services.AddIdentity<UserInfo, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            // Add Jwt Authentication
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
