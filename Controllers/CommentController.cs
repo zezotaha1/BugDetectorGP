@@ -34,6 +34,11 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
+            
+            if (blog == null)
+                return BadRequest("Blog Not Found");
+
             var listOfComments = _Context.Comment.ToList().Where(C=>C.BlogId==model.BlogId);
             var Comments = new List<CommentReturnDTO>();
             foreach (var comment in listOfComments) 
@@ -137,22 +142,27 @@ namespace BugDetectorGP.Controllers
                 LikeComment.LikeOrDislike = true;
                 LikeComment.UserId = findUser.Id;
                 LikeComment.CommentId = model.CommentId;
-                Comment.LikeNumber += 1;
+
+                Comment.LikeNumber++;
+
                 _Context.LikesAndDislikesForComments.Add(LikeComment);
                 _Context.SaveChanges();
+
                 return Ok("Like added");
             }
             if (findCommentLike.LikeOrDislike == false)
             {
                 findCommentLike.LikeOrDislike = true;
-                Comment.LikeNumber += 1;
-                Comment.DislikeNumber -= 1;
-                Comment.DislikeNumber = int.Max(0, Comment.DislikeNumber);
+
+                Comment.LikeNumber++;
+                Comment.DislikeNumber--;
+
                 _Context.SaveChanges();
+
                 return Ok("Like added and your Dislike removed");
             }
-            Comment.LikeNumber -= 1;
-            Comment.LikeNumber = int.Max(0, Comment.LikeNumber);
+
+            Comment.LikeNumber--;
             _Context.LikesAndDislikesForComments.Remove(findCommentLike);
             _Context.SaveChanges();
             return Ok("Your Like removed");
@@ -186,25 +196,33 @@ namespace BugDetectorGP.Controllers
                 LikeComment.LikeOrDislike = false;
                 LikeComment.UserId = findUser.Id;
                 LikeComment.CommentId = model.CommentId;
-                Comment.DislikeNumber += 1;
+
+                Comment.DislikeNumber++;
+
                 _Context.LikesAndDislikesForComments.Add(LikeComment);
                 _Context.SaveChanges();
+
                 return Ok("Dislike added");
             }
             if (findCommentLike.LikeOrDislike == true)
             {
                 findCommentLike.LikeOrDislike = false;
-                Comment.LikeNumber -= 1;
-                Comment.DislikeNumber += 1;
-                Comment.LikeNumber = int.Max(0, Comment.DislikeNumber);
+
+                Comment.DislikeNumber++;
+                Comment.LikeNumber--;
+
                 _Context.SaveChanges();
+
                 return Ok("Dislike added and your like removed");
             }
-            Comment.DislikeNumber -= 1;
-            Comment.DislikeNumber = int.Max(0, Comment.LikeNumber);
+
+            Comment.DislikeNumber--;
+
             _Context.LikesAndDislikesForComments.Remove(findCommentLike);
             _Context.SaveChanges();
+
             return Ok("Your DisLike removed");
         }
+
     }
 }
