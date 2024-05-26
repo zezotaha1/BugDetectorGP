@@ -17,7 +17,7 @@ namespace BugDetectorGP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ScanController : ControllerBase
     {
         private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
@@ -41,7 +41,12 @@ namespace BugDetectorGP.Controllers
                 return BadRequest(ModelState);
 
             var result = await _FreeWebScan._Scan(model.url);
-            //await SaveReport(result, model.url, "WebScan");
+
+            if (await SaveReport(result, model.url, "WebScan") == false)
+            {
+                return BadRequest("You mast be login");
+            }
+
             return Ok(new ScanResult()
             {
                 result = await Scan.ReturnWebOrNetworkReport(result)
@@ -58,7 +63,11 @@ namespace BugDetectorGP.Controllers
 
             var result = await _FreeNetworkScan._Scan(model.url);
 
-            //await SaveReport(result, model.url, "NetworkScan");
+            if (await SaveReport(result, model.url, "NetworkScan") == false)
+            {
+                return BadRequest("You mast be login");
+            }
+
             return Ok(new ScanResult()
             {
                 result = await Scan.ReturnWebOrNetworkReport(result)
@@ -75,7 +84,10 @@ namespace BugDetectorGP.Controllers
 
             var result = await _PremiumWebScan._Scan(model.url);
 
-            //await SaveReport(result, model.url, "WebScan");
+            if (await SaveReport(result, model.url, "WebScan") == false)
+            {
+                return BadRequest("You mast be login");
+            }
 
             return Ok(new ScanResult()
             {
@@ -93,7 +105,10 @@ namespace BugDetectorGP.Controllers
 
             var result = await _PremiumNetworkScan._Scan(model.url);
 
-            //await SaveReport(result, model.url, "NetworkScan");
+            if (await SaveReport(result, model.url, "NetworkScan")==false)
+            {
+                return BadRequest("You mast be login");
+            }
             return Ok(new ScanResult()
             {
                 result = await Scan.ReturnWebOrNetworkReport(result)
@@ -163,7 +178,13 @@ namespace BugDetectorGP.Controllers
             report.Type = type;
 
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByEmailAsync(userName);
+
+            if(userName == null)
+            {
+                return false;
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
             report.UserId = user.Id;
             report.PublicationDate = DateTime.Now.ToLocalTime();
             _Context.Reports.Add(report);
