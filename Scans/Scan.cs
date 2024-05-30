@@ -61,6 +61,7 @@ namespace BugDetectorGP.Scans
             var result = "";
             foreach (var file in files)
             {
+                
                 string command = "bash " + file + " " + targit;
 
                 try
@@ -83,12 +84,12 @@ namespace BugDetectorGP.Scans
 
                         process.WaitForExit();
 
-                        result += output;
+                        result += output +" "+file + " ";
                     }
                 }
                 catch (Exception ex)
                 {
-                    result += $"Error: {ex.Message}";
+                    result += $"Error: {ex.Message}"+" "+file;
                 }
             }
             result = result.Replace("\n", "<br>").Replace("\t", "");

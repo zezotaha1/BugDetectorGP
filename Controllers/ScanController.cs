@@ -162,7 +162,7 @@ namespace BugDetectorGP.Controllers
             
             if (report.UserId != findUser.Id)
                 return BadRequest("You are not allowed to see this Report!");
-            
+                
             return Ok(new ScanResult()
             {
                 result = await Scan.ReturnWebOrNetworkReport(report.Result)
