@@ -42,48 +42,8 @@ namespace BugDetectorGP.Controllers
 
             var result = await _FreeWebScan._Scan(model.url);
 
-            if (result.Contains("Error"))
-            {
-                return BadRequest(result);
-            }
-            
-            if (await SaveReport(result, model.url, "WebScan") == false)
-            {
-                return BadRequest("You mast be login");
-            }
-
-            return Ok(new ScanResult()
-            {
-                result = await Scan.ReturnWebOrNetworkReport(result)
-            });
+            return await ScanResult(result,model.url, "WebScan");
         }
-
-
-        [HttpPost("FreeNetworkScan")]
-
-        public async Task<IActionResult> FreeNetworkScan(WebScan model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _FreeNetworkScan._Scan(model.url);
-            
-            if (result.Contains("Error"))
-            {
-                return BadRequest(result);
-            }
-
-            if (await SaveReport(result, model.url, "NetworkScan") == false)
-            {
-                return BadRequest("You mast be login");
-            }
-
-            return Ok(new ScanResult()
-            {
-                result = await Scan.ReturnWebOrNetworkReport(result)
-            });
-        }
-
 
         [HttpPost("PremiumWebScan")]
 
@@ -94,22 +54,20 @@ namespace BugDetectorGP.Controllers
 
             var result = await _PremiumWebScan._Scan(model.url);
 
-            if (result.Contains("Error"))
-            {
-                return BadRequest(result);
-            }
-
-            if (await SaveReport(result, model.url, "WebScan") == false)
-            {
-                return BadRequest("You mast be login");
-            }
-
-            return Ok(new ScanResult()
-            {
-                result = await Scan.ReturnWebOrNetworkReport(result)
-            });
+            return await ScanResult(result, model.url, "WebScan");
         }
 
+        [HttpPost("FreeNetworkScan")]
+
+        public async Task<IActionResult> FreeNetworkScan(WebScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _FreeNetworkScan._Scan(model.url);
+
+            return await ScanResult(result, model.url, "NetworkScan");
+        }
 
         [HttpPost("PremiumNetworkScan")]
 
@@ -120,20 +78,9 @@ namespace BugDetectorGP.Controllers
 
             var result = await _PremiumNetworkScan._Scan(model.url);
 
-            if (result.Contains("Error"))
-            {
-                return BadRequest(result);
-            }
-
-            if (await SaveReport(result, model.url, "NetworkScan")==false)
-            {
-                return BadRequest("You mast be login");
-            }
-            return Ok(new ScanResult()
-            {
-                result = await Scan.ReturnWebOrNetworkReport(result)
-            });
+            return await ScanResult(result, model.url, "NetworkScan");
         }
+
 
         [HttpPost("ReturnReportsForUser")]
         public async Task<IActionResult> ReturnReportsForUser()
@@ -212,5 +159,22 @@ namespace BugDetectorGP.Controllers
             return true;
         }
 
+        private async Task<IActionResult> ScanResult(string result,string target,string type)
+        {
+            if (result.Contains("Error"))
+            {
+                return BadRequest(result);
+            }
+
+            if (await SaveReport(result, target, type) == false)
+            {
+                return BadRequest("You mast be login");
+            }
+
+            return Ok(new ScanResult()
+            {
+                result = await Scan.ReturnWebOrNetworkReport(result)
+            });
+        }
     }
 }
