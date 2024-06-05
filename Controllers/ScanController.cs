@@ -42,6 +42,11 @@ namespace BugDetectorGP.Controllers
 
             var result = await _FreeWebScan._Scan(model.url);
 
+            if (result.Contains("Error"))
+            {
+                return BadRequest(result);
+            }
+            
             if (await SaveReport(result, model.url, "WebScan") == false)
             {
                 return BadRequest("You mast be login");
@@ -62,6 +67,11 @@ namespace BugDetectorGP.Controllers
                 return BadRequest(ModelState);
 
             var result = await _FreeNetworkScan._Scan(model.url);
+            
+            if (result.Contains("Error"))
+            {
+                return BadRequest(result);
+            }
 
             if (await SaveReport(result, model.url, "NetworkScan") == false)
             {
@@ -84,6 +94,11 @@ namespace BugDetectorGP.Controllers
 
             var result = await _PremiumWebScan._Scan(model.url);
 
+            if (result.Contains("Error"))
+            {
+                return BadRequest(result);
+            }
+
             if (await SaveReport(result, model.url, "WebScan") == false)
             {
                 return BadRequest("You mast be login");
@@ -104,6 +119,11 @@ namespace BugDetectorGP.Controllers
                 return BadRequest(ModelState);
 
             var result = await _PremiumNetworkScan._Scan(model.url);
+
+            if (result.Contains("Error"))
+            {
+                return BadRequest(result);
+            }
 
             if (await SaveReport(result, model.url, "NetworkScan")==false)
             {

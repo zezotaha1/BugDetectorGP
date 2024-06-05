@@ -84,12 +84,19 @@ namespace BugDetectorGP.Scans
 
                         process.WaitForExit();
 
-                        result += output +" "+file + " ";
+                        int errorIndex = output.IndexOf("Error");
+                        if (errorIndex >= 0)
+                        {
+                            result = output.Substring(errorIndex);
+                            return result;
+                        }
+
+                        result += output ;
                     }
                 }
                 catch (Exception ex)
                 {
-                    result += $"Error: {ex.Message}"+" "+file;
+                    result += $"Error: {ex.Message}";
                 }
             }
             result = result.Replace("\n", "<br>").Replace("\t", "");
@@ -107,9 +114,9 @@ namespace BugDetectorGP.Scans
                 while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
                 while (i < ReportResult.Length && ReportResult[i] != '#') { title += ReportResult[i]; i++; continue; }    
                 while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] != '#') { details += ReportResult[i]; i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
                 while (i < ReportResult.Length && ReportResult[i] != '#') { output += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '#') { details += ReportResult[i]; i++; continue; }
 
                 _output.Add(new ReportDto 
                 { 
