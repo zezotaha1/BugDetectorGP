@@ -39,7 +39,7 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await Scan._Scan( "bash "+WebScanPath + "domain_free.sh "+model.url);
+            var result = await Scan._Scan( "bash "+WebScanPath + "/domain_free.sh "+model.url);
 
             return await ScanResult(result,model.url, "WebScan");
         }
@@ -51,7 +51,7 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await Scan._Scan("Python3 " + WebScanPath + "url_free.py " + model.url);
+            var result = await Scan._Scan("Python3 " + WebScanPath + "/url_free.py " + model.url);
 
             return await ScanResult(result, model.url, "WebScan");
         }

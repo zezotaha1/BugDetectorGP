@@ -12,7 +12,7 @@ namespace BugDetectorGP.Scans
     public class Scan
     {
 
-        public async Task<string> AddNewFile(string fileName, string content)
+        public async Task<string> AddNewFile(string folderPath, string fileName, string content)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<string> RemoveFile(string fileName)
+        public async Task<string> RemoveFile(string folderPath,string fileName)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace BugDetectorGP.Scans
                         return result;
                     }
 
-                    result += output ;
+                    result += output;
                 }
             }
             catch (Exception ex)
