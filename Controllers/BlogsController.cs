@@ -28,11 +28,11 @@ namespace BugDetectorGP.Controllers
             _Context = Context;
             _userManager = userManager;
         }
-        
+
         [HttpPost("AddBlog")]
         public async Task<IActionResult> AddBlog(BlogModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -45,11 +45,13 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("You must be login or your username incorrect");
             }
 
-            var NewBlog = new Blogs();
-            NewBlog.Title = model.Title;
-            NewBlog.Content = model.Content;
-            NewBlog.PublicationDate = DateTime.UtcNow.ToLocalTime();
-            NewBlog.UserId=findUser.Id;
+            var NewBlog = new Blogs
+            {
+                Title = model.Title,
+                Content = model.Content,
+                PublicationDate = DateTime.UtcNow.ToLocalTime(),
+                UserId = findUser.Id
+            };
             _Context.Blogs.Add(NewBlog);
             _Context.SaveChanges();
             return Ok("New Blog is added");
@@ -73,32 +75,33 @@ namespace BugDetectorGP.Controllers
             if (blog == null)
                 return BadRequest("Blog Not Found");
 
-            if(blog.UserId == findUser.Id)
+            if (blog.UserId == findUser.Id)
             {
                 _Context.Blogs.Remove(blog);
                 _Context.SaveChanges();
-                return Ok("Blog are Deleted");
+                return Ok("Blog is Deleted");
             }
-            return BadRequest("You donot have Acsess to remove this Blog");
+            return BadRequest("You do not have Access to remove this Blog");
         }
 
         [HttpPost("ReturnAllBlogs")]
+        [AllowAnonymous]
         public async Task<IActionResult> ReturnAllBlogs()
         {
-            var listBlog=_Context.Blogs.ToList();            
+            var listBlog = _Context.Blogs.ToList();
             var AllBlogs = new List<AllBlogsDTO>();
-            foreach(var  blog in listBlog)
+            foreach (var blog in listBlog)
             {
-                var UserData =await _Context.Users.SingleOrDefaultAsync(u => u.Id == blog.UserId);
+                var UserData = await _Context.Users.SingleOrDefaultAsync(u => u.Id == blog.UserId);
                 var temp = new AllBlogsDTO
                 {
-                    Id=blog.BlogId,
+                    Id = blog.BlogId,
                     Title = blog.Title,
-                    Content = blog.Content,            
+                    Content = blog.Content,
                     UsrName = UserData.UserName,
-                    PublicationDate=blog.PublicationDate,
-                    NumberOfDisLikes=blog.DislikeNumber,
-                    NumberOfLikes=blog.LikeNumber
+                    PublicationDate = blog.PublicationDate,
+                    NumberOfDisLikes = blog.DislikeNumber,
+                    NumberOfLikes = blog.LikeNumber
                 };
                 AllBlogs.Add(temp);
             }
@@ -106,7 +109,7 @@ namespace BugDetectorGP.Controllers
         }
 
         [HttpPost("ReturnOneBlog")]
-        public async Task<IActionResult> ReturnOneBlog (BlogIdDTO model)
+        public async Task<IActionResult> ReturnOneBlog(BlogIdDTO model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -126,7 +129,7 @@ namespace BugDetectorGP.Controllers
                 NumberOfDisLikes = blog.DislikeNumber,
                 NumberOfLikes = blog.LikeNumber
             };
-            
+
             return Ok(temp);
         }
 
@@ -153,11 +156,13 @@ namespace BugDetectorGP.Controllers
 
             if (findBlogLike == null)
             {
-                var LikeBlog = new LikesAndDislikes();
-                LikeBlog.PublicationDate = DateTime.Now.ToLocalTime();
-                LikeBlog.LikeOrDislike = true;
-                LikeBlog.UserId = findUser.Id;
-                LikeBlog.BlogId = model.BlogId;
+                var LikeBlog = new LikesAndDislikes
+                {
+                    PublicationDate = DateTime.Now.ToLocalTime(),
+                    LikeOrDislike = true,
+                    UserId = findUser.Id,
+                    BlogId = model.BlogId
+                };
 
                 blog.LikeNumber++;
 
@@ -207,14 +212,16 @@ namespace BugDetectorGP.Controllers
             var findBlogLike = await _Context.LikesAndDislikes.SingleOrDefaultAsync(b => (b.BlogId == model.BlogId && b.UserId == findUser.Id));
             if (findBlogLike == null)
             {
-                var LikeBlog = new LikesAndDislikes();
-                LikeBlog.PublicationDate = DateTime.Now.ToLocalTime();
-                LikeBlog.LikeOrDislike = false;
-                LikeBlog.UserId = findUser.Id;
-                LikeBlog.BlogId = model.BlogId;
+                var LikeBlog = new LikesAndDislikes
+                {
+                    PublicationDate = DateTime.Now.ToLocalTime(),
+                    LikeOrDislike = false,
+                    UserId = findUser.Id,
+                    BlogId = model.BlogId
+                };
 
                 blog.DislikeNumber++;
-                
+
                 _Context.LikesAndDislikes.Add(LikeBlog);
                 _Context.SaveChanges();
 
@@ -238,13 +245,6 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
 
             return Ok("Your DisLike removed");
-        }
-
-        [HttpPost("Search")]
-        public async Task<IActionResult>SearchInBlogs(SearchDTO model)
-        {
-
-            return Ok();
         }
 
     }
