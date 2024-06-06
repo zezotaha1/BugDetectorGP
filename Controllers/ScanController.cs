@@ -20,10 +20,9 @@ namespace BugDetectorGP.Controllers
     [Authorize]
     public class ScanController : ControllerBase
     {
-        private Scan _FreeWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/FreeWebScan")));
-        private Scan _PremiumWebScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumWebScan")));
-        private Scan _FreeNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "FreeNetworkScan")));
-        private Scan _PremiumNetworkScan = new Scan(Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans", "PremiumNetworkScan")));
+        private Scan Scan = new Scan();
+        private string WebScanPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/WebScan"));
+        private string NetworkScanPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/NetworkScan"));
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
 
@@ -40,7 +39,7 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _FreeWebScan._Scan(model.url);
+            var result = await Scan._Scan( "bash "+WebScanPath + "domain_free.sh "+model.url);
 
             return await ScanResult(result,model.url, "WebScan");
         }
@@ -52,19 +51,19 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _PremiumWebScan._Scan(model.url);
+            var result = await Scan._Scan("Python3 " + WebScanPath + "url_free.py " + model.url);
 
             return await ScanResult(result, model.url, "WebScan");
         }
 
-        [HttpPost("FreeNetworkScan")]
+        /*[HttpPost("FreeNetworkScan")]
 
         public async Task<IActionResult> FreeNetworkScan(WebScan model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _FreeNetworkScan._Scan(model.url);
+            var result = await Scan._Scan("bash " + WebScanPath + "domain_free.sh " + model.url);
 
             return await ScanResult(result, model.url, "NetworkScan");
         }
@@ -79,7 +78,7 @@ namespace BugDetectorGP.Controllers
             var result = await _PremiumNetworkScan._Scan(model.url);
 
             return await ScanResult(result, model.url, "NetworkScan");
-        }
+        }*/
 
 
         [HttpPost("ReturnReportsForUser")]

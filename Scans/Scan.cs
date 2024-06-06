@@ -11,12 +11,6 @@ namespace BugDetectorGP.Scans
 {
     public class Scan
     {
-        protected string folderPath;
-
-        public Scan(string folderPath)
-        {
-            this.folderPath = folderPath;
-        }
 
         public async Task<string> AddNewFile(string fileName, string content)
         {
@@ -55,50 +49,46 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<string> _Scan (string targit)
+        public async Task<string> _Scan (string command)
         {
-            var files = Directory.GetFiles(folderPath);
+            
             var result = "";
-            foreach (var file in files)
+
+            try
             {
-                
-                string command = "bash " + file + " " + targit;
-
-                try
+                using (var process = new Process())
                 {
-                    using (var process = new Process())
+                    var startInfo = new ProcessStartInfo
                     {
-                        var startInfo = new ProcessStartInfo
-                        {
-                            FileName = "/bin/bash",
-                            Arguments = $"-c \"{command}\"",
-                            RedirectStandardOutput = true,
-                            UseShellExecute = false,
-                            CreateNoWindow = true
-                        };
+                        FileName = "/bin/bash",
+                        Arguments = $"-c \"{command}\"",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
 
-                        process.StartInfo = startInfo;
-                        process.Start();
+                    process.StartInfo = startInfo;
+                    process.Start();
 
-                        string output = process.StandardOutput.ReadToEnd();
+                    string output = process.StandardOutput.ReadToEnd();
 
-                        process.WaitForExit();
+                    process.WaitForExit();
 
-                        int errorIndex = output.IndexOf("Error");
-                        if (errorIndex >= 0)
-                        {
-                            result = output.Substring(errorIndex);
-                            return result;
-                        }
-
-                        result += output ;
+                    int errorIndex = output.IndexOf("Error");
+                    if (errorIndex >= 0)
+                    {
+                        result = output.Substring(errorIndex);
+                        return result;
                     }
-                }
-                catch (Exception ex)
-                {
-                    result += $"Error: {ex.Message}";
+
+                    result += output ;
                 }
             }
+            catch (Exception ex)
+            {
+                result += $"Error: {ex.Message}";
+            }
+            
             result = result.Replace("\n", "<br>").Replace("\t", "");
             return result;
         }

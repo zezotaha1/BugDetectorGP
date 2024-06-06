@@ -6,7 +6,6 @@ public class SendGridEmailSender
 {
     private static string key = "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";
 
-
     public static async Task<string> SendEmail(string email, string subject, string plainTextContent)
     {
         if (string.IsNullOrEmpty(key))
