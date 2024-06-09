@@ -49,7 +49,7 @@ namespace BugDetectorGP.Scans
             }
         }
 
-        public async Task<string> _Scan (string command)
+        public async Task<string> Execute(string command)
         {
             
             var result = "";
