@@ -37,7 +37,19 @@ namespace BugDetectorGP.Scans.SourceCode.input
                     List<csScanResult> resultList = getFile.FinalResult();
                     OutputGenerator outputGen = new OutputGenerator(resultList);
                     var x = await outputGen.CreateHtmlOutputAsync();
-                    foreach(var i in x.result)output.result.Add(i);
+                    var FilePath = file;
+                    int Src = FilePath.IndexOf("src");
+                    if (Src >= 0)
+                    {
+                        Src += 4;
+                        FilePath = FilePath.Substring(Src);  
+                    }
+                    foreach (var i in x.result)
+                    {
+
+                        i.filepath = FilePath;
+                        output.result.Add(i);
+                    }
                 }
                 // create a recursive function to call all subpaths 
                 string[] subDirectories = Directory.GetDirectories(directoryPath);

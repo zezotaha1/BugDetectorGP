@@ -45,7 +45,11 @@ namespace BugDetectorGP.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while cloning the repository.");
             }
 
+            // Perform the scan
             var result = new CreateInstanceOfAnylazer(repositoryPath);
+
+            // Clean up the folder after the scan
+            DeleteFolder(repositoryPath);
 
             return Ok(result.output);
         }
@@ -113,6 +117,22 @@ namespace BugDetectorGP.Controllers
                     return false;
                 }
             });
+        }
+
+        static void DeleteFolder(string path)
+        {
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                    Console.WriteLine("Directory deleted successfully at {0}", path);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("The process failed: {0}", e.ToString());
+            }
         }
     }
 }
