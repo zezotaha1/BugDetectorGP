@@ -15,11 +15,11 @@ namespace BugDetectorGP.Scans.SourceCode.input
         string directoryPath;
         static Dictionary<string, int> visitedPath =
                      new Dictionary<string, int>();
-        public SourceCodeScanResult output;
+        public string output;
 
         public CreateInstanceOfAnylazer(string FilePath) {
             this.directoryPath = FilePath;
-            output = new SourceCodeScanResult() { result = new List<SourceCodeReport> { } };
+            output ="";
             DoScanAsync(FilePath);
         }
         public async Task DoScanAsync(string directoryPath)
@@ -36,7 +36,7 @@ namespace BugDetectorGP.Scans.SourceCode.input
                     Converter getFile = new Converter(file);
                     List<csScanResult> resultList = getFile.FinalResult();
                     OutputGenerator outputGen = new OutputGenerator(resultList);
-                    var x = await outputGen.CreateHtmlOutputAsync();
+                    
                     var FilePath = file;
                     int Src = FilePath.IndexOf("src");
                     if (Src >= 0)
@@ -44,12 +44,7 @@ namespace BugDetectorGP.Scans.SourceCode.input
                         Src += 4;
                         FilePath = FilePath.Substring(Src);  
                     }
-                    foreach (var i in x.result)
-                    {
-
-                        i.filepath = FilePath;
-                        output.result.Add(i);
-                    }
+                    output+= await outputGen.CreateOutPut(FilePath);
                 }
                 // create a recursive function to call all subpaths 
                 string[] subDirectories = Directory.GetDirectories(directoryPath);

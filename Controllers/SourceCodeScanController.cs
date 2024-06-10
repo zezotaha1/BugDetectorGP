@@ -1,11 +1,15 @@
 ﻿using BugDetectorGP.Dto;
+using BugDetectorGP.Models;
+using BugDetectorGP.Models.user;
 using BugDetectorGP.Scans;
 using BugDetectorGP.Scans.SourceCode.input;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -17,6 +21,14 @@ namespace BugDetectorGP.Controllers
     public class SourceCodeScanController : ControllerBase
     {
         private string GithubRepos = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/SourceCode/GithubRepos"));
+        private readonly ApplicationDbContext _Context;
+        private readonly UserManager<UserInfo> _userManager;
+
+        public SourceCodeScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
+        {
+            _Context = Context;
+            _userManager = userManager;
+        }
 
         [HttpPost("SourceCodeScan")]
         public async Task<IActionResult> SourceCodeScan(WebScan model)
@@ -47,11 +59,12 @@ namespace BugDetectorGP.Controllers
 
             // Perform the scan
             var result = new CreateInstanceOfAnylazer(repositoryPath);
-
+            if (!await SaveReport(result.output, model.url, "SourceCodeScan"))
+                return BadRequest("You must be logged in");
             // Clean up the folder after the scan
             DeleteFolder(repositoryPath);
 
-            return Ok(result.output);
+            return Ok(ReturnReports.SourceCodeScanResult(result.output)); 
         }
 
         static bool IsGitHubRepositoryUrl(string url)
@@ -133,6 +146,28 @@ namespace BugDetectorGP.Controllers
             {
                 Console.WriteLine("The process failed: {0}", e.ToString());
             }
+        }
+        private async Task<bool> SaveReport(string result, string target, string type)
+        {
+            var report = new Reports();
+
+            report.Result = result;
+            report.Target = target;
+            report.Type = type;
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userName == null)
+            {
+                return false;
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+            report.UserId = user.Id;
+            report.PublicationDate = DateTime.Now.ToLocalTime();
+            _Context.Reports.Add(report);
+            _Context.SaveChanges();
+            return true;
         }
     }
 }

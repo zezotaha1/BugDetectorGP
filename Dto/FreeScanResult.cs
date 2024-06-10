@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace BugDetectorGP.Dto
 {
-    public class ScanResult
+    public class FreeScanResult
     {
-        public List<ReportDto> result { get; set; }
+        public List<FreeReportDto> result { get; set; }
     }
 }

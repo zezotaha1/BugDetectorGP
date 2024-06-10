@@ -18,24 +18,16 @@ namespace BugDetectorGP.Scans.SourceCode.output
         public OutputGenerator(List<csScanResult> SolutionScanResults)
         {
             this.SolutionScanResults = SolutionScanResults;
-            CreateOutPut();
         }
 
-
-        // Edit this function to getApi mn chatGpt to know which files 
-        public void CreateOutPut()
-        {
-            CreateHtmlOutputAsync();
-        }
-
-        public async Task<SourceCodeScanResult> CreateHtmlOutputAsync()
+        public async Task<string> CreateOutPut(string file)
         {
             int methodCounter = 1;
             SolutionScanResults.Reverse();
-            var ScanResultDTO = new SourceCodeScanResult() {result=new List<SourceCodeReport> { } };
+            string result = "";
             foreach (var methodDeclaration in SolutionScanResults)
             {
-                // Create an HTML file for the method
+
                 if (methodDeclaration.HasSQLInjection == true)
                 {
 
@@ -44,20 +36,15 @@ namespace BugDetectorGP.Scans.SourceCode.output
                     htmlContent += '\n';
                     htmlContent += methodDeclaration.MethodBody;
                     FinalResult final = new FinalResult(htmlContent);
-                    var results = final.GetResults();
-                    var _SourceCodeReport = new SourceCodeReport()
-                    {
-                        InjectedFunction = results[0],
-                        MitigationFunction = results[1],
-                        Explanation = results[2]
-                    };
-                    ScanResultDTO.result.Add(_SourceCodeReport);
+                    result += "##########" + file+ final.GetResults();
+                    
+                    
 
 
                     methodCounter++;
                 }
             }
-            return ScanResultDTO;
+            return result;
         }
 
         // Method to read the content of an HTML file

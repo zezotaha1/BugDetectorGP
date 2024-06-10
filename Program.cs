@@ -33,6 +33,10 @@ namespace BugDetectorGP
 
             builder.Services.AddScoped<IAuthService, AuthService>();
 
+            // Register TaskSchedulerService
+            builder.Services.AddSingleton<TaskSchedulerService>();
+            builder.Services.AddHostedService(provider => provider.GetRequiredService<TaskSchedulerService>());
+
             // Add Jwt Authentication
             builder.Services.AddAuthentication(options =>
             {

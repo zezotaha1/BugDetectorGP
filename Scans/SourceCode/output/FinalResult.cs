@@ -13,7 +13,7 @@ namespace GBugDetectorGP.Scans.SourceCode.output
         private static readonly string apiKey = "AIzaSyCGbBqIOCqVV24-PeAVvRsERxZwlQDhklo";
         private readonly string url;
         private readonly string InjectedFunction;
-        public List<string> SolutionScanResults { get; private set; } = new List<string>();
+        public string SolutionScanResults  = "";
 
         public FinalResult(string injectedFunction)
         {
@@ -69,28 +69,25 @@ namespace GBugDetectorGP.Scans.SourceCode.output
                 // Explanation is after the mitigation function
                 string explanation = splitContent.Length > 2 ? splitContent[2] : "No explanation found.";
 
-                SolutionScanResults.Add(InjectedFunction);
-                SolutionScanResults.Add(mitigationFunction);
-                SolutionScanResults.Add(explanation);
+                SolutionScanResults+="##########"+InjectedFunction.Replace("\n", "<br>").Replace("\t", "").Replace("#","*");
+                SolutionScanResults+= "##########" + mitigationFunction.Replace("\n", "<br>").Replace("\t", "").Replace("#", "*");
+                SolutionScanResults += "##########" + explanation.Replace("\n", "<br>").Replace("\t", "").Replace("#", "*");
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine($"Request error: {e.Message}");
-                SolutionScanResults.Add("Error in making the request.");
+                SolutionScanResults = $"Request error: {e.Message}";
             }
             catch (JsonException e)
             {
-                Console.WriteLine($"JSON error: {e.Message}");
-                SolutionScanResults.Add("Error in parsing the response.");
+                SolutionScanResults=$"JSON error: {e.Message}";
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Unexpected error: {e.Message}");
-                SolutionScanResults.Add("Unexpected error occurred.");
+                SolutionScanResults=$"Unexpected error: {e.Message}";
             }
         }
 
-        public List<string> GetResults()
+        public string GetResults()
         {
             return SolutionScanResults;
         }
