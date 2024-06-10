@@ -74,6 +74,11 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (model.date < DateTime.Now.ToLocalTime())
+            {
+                return BadRequest("The specified time is in the past.");
+            }
+
             var WebScan = new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => SourceCodeScan(WebScan));
             return Ok("Free Web Scan scheduled successfully.");
@@ -117,8 +122,8 @@ namespace BugDetectorGP.Controllers
                 try
                 {
                     Process process = new Process();
-                    process.StartInfo.FileName = "cmd.exe";
-                    process.StartInfo.Arguments = $"/C {gitCloneCommand}";
+                    process.StartInfo.FileName = "/bin/bash";
+                    process.StartInfo.Arguments = $"-c \"{gitCloneCommand}\"";
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
                     process.StartInfo.UseShellExecute = false;

@@ -80,6 +80,11 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (model.date < DateTime.Now.ToLocalTime())
+            {
+                return BadRequest("The specified time is in the past.");
+            }
+
             var WebScan = new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => FreeWebScan(WebScan));
             return Ok("Free Web Scan scheduled successfully.");
@@ -90,6 +95,11 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            if(model.date < DateTime.Now.ToLocalTime())
+            {
+                return BadRequest("The specified time is in the past.");
+            }
 
             var WebScan = new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => PremiumWebScan(WebScan));
@@ -102,6 +112,11 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (model.date < DateTime.Now.ToLocalTime())
+            {
+                return BadRequest("The specified time is in the past.");
+            }
+
             var WebScan =new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => FreeNetworkScan(WebScan));
             return Ok("Free Network Scan scheduled successfully.");
@@ -112,6 +127,11 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (model.date < DateTime.Now.ToLocalTime())
+            {
+                return BadRequest("The specified time is in the past.");
+            }
 
             var WebScan = new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => PremiumNetworkScan(WebScan));

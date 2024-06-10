@@ -32,7 +32,7 @@ public class TaskSchedulerService : BackgroundService
 
             lock (_taskQueue)
             {
-                if (_taskQueue.Count > 0 && _taskQueue.Min.ExecuteAt <= DateTime.Now)
+                if (_taskQueue.Count > 0 && _taskQueue.Min.ExecuteAt <= DateTime.Now.ToLocalTime())
                 {
                     nextTask = _taskQueue.Min;
                     _taskQueue.Remove(nextTask);
