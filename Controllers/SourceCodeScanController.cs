@@ -23,11 +23,13 @@ namespace BugDetectorGP.Controllers
         private string GithubRepos = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "Scans/SourceCode/GithubRepos"));
         private readonly ApplicationDbContext _Context;
         private readonly UserManager<UserInfo> _userManager;
+        private readonly TaskSchedulerService _taskSchedulerService;
 
-        public SourceCodeScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager)
+        public SourceCodeScanController(ApplicationDbContext Context, UserManager<UserInfo> userManager, TaskSchedulerService taskSchedulerService)
         {
             _Context = Context;
             _userManager = userManager;
+            _taskSchedulerService = taskSchedulerService;
         }
 
         [HttpPost("SourceCodeScan")]
@@ -66,7 +68,16 @@ namespace BugDetectorGP.Controllers
 
             return Ok(ReturnReports.SourceCodeScanResult(result.output)); 
         }
+        [HttpPost("ScheduleSourceCodeScan")]
+        public async Task<IActionResult> ScheduleFreeWebScan(ScheduleScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            var WebScan = new WebScan() { url = model.url };
+            _taskSchedulerService.ScheduleTask(model.date, () => SourceCodeScan(WebScan));
+            return Ok("Free Web Scan scheduled successfully.");
+        }
         static bool IsGitHubRepositoryUrl(string url)
         {
             // Define a regular expression for matching GitHub repository URLs

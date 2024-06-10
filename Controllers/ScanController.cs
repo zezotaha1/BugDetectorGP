@@ -74,6 +74,51 @@ namespace BugDetectorGP.Controllers
             return await ScanResult(result, model.url, "PremiumNetworkScan");
         }
 
+        [HttpPost("ScheduleFreeWebScan")]
+        public async Task<IActionResult> ScheduleFreeWebScan(ScheduleScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var WebScan = new WebScan() { url = model.url };
+            _taskSchedulerService.ScheduleTask(model.date, () => FreeWebScan(WebScan));
+            return Ok("Free Web Scan scheduled successfully.");
+        }
+
+        [HttpPost("SchedulePremiumWebScan")]
+        public IActionResult SchedulePremiumWebScan(ScheduleScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var WebScan = new WebScan() { url = model.url };
+            _taskSchedulerService.ScheduleTask(model.date, () => PremiumWebScan(WebScan));
+            return Ok("Premium Web Scan scheduled successfully.");
+        }
+
+        [HttpPost("ScheduleFreeNetworkScan")]
+        public IActionResult ScheduleFreeNetworkScan(ScheduleScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var WebScan =new WebScan() { url = model.url };
+            _taskSchedulerService.ScheduleTask(model.date, () => FreeNetworkScan(WebScan));
+            return Ok("Free Network Scan scheduled successfully.");
+        }
+
+        [HttpPost("SchedulePremiumNetworkScan")]
+        public IActionResult SchedulePremiumNetworkScan(ScheduleScan model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var WebScan = new WebScan() { url = model.url };
+            _taskSchedulerService.ScheduleTask(model.date, () => PremiumNetworkScan(WebScan));
+            return Ok("Premium Network Scan scheduled successfully.");
+        }
+
+
         [HttpPost("ReturnReportsForUser")]
         public async Task<IActionResult> ReturnReportsForUser()
         {
@@ -94,6 +139,8 @@ namespace BugDetectorGP.Controllers
 
             return Ok(returnReports);
         }
+
+
 
         [HttpPost("ReturnOneReport")]
         public async Task<IActionResult> ReturnOneReport(ReportIdDTO model)
