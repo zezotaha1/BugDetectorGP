@@ -38,14 +38,14 @@ namespace BugDetectorGP.Models
             {
                 string title = "", details = "", output = "", mitigation="";
 
-                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] != '#') { title += ReportResult[i]; i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] != '#') { output += ReportResult[i]; i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] != '#') { details += ReportResult[i]; i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
-                while (i < ReportResult.Length && ReportResult[i] != '#') { mitigation += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '√') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '√') { title += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '√') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '√') { output += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '√') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '√') { details += ReportResult[i]; i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] == '√') { i++; continue; }
+                while (i < ReportResult.Length && ReportResult[i] != '√') { mitigation += ReportResult[i]; i++; continue; }
 
                 result.Add(new PremiumReportDto
                 {
