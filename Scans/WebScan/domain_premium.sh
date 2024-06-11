@@ -1,11 +1,11 @@
-#/bin/bash
+﻿#/bin/bash
 
 validate_domain() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Validating Domain Format"
-	echo "######################################################################"
+	echo "√√√√√√√"
 
 	# Regex pattern for domain/subdomain validation
 	local pattern="^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
@@ -13,20 +13,22 @@ validate_domain() {
 	# Check if the input matches the pattern
 	if [[ $domain =~ $pattern ]]; then
 		echo -e "Valid domain/subdomain format: $domain"
-		# Check if the domain is live or down
-		check_domain_status "$domain"
 	else
 		echo -e "Error: Invalid domain/subdomain format: $domain"
 		exit 1
 	fi
+	echo "√√√√√√√"
+	echo "Checking domain format involves verifying whether a given string conforms to the syntax rules of a valid domain name, typically consisting of alphanumeric characters and hyphens separated by periods, and meeting length restrictions specified by standards such as DNS."
+	echo "√√√√√√√"
+	echo "No mitigation"
 }
 
 check_domain_status() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking Domain/Subdomain Connection"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Check if the domain is live by sending a ping request
 	if ping -c 1 "$domain" &>/dev/null; then
 		echo -e "Domain is live: $domain"
@@ -34,42 +36,47 @@ check_domain_status() {
 		echo -e "Error: Domain is down: $domain"
 		exit 1
 	fi
+
+	echo "√√√√√√√"
+	echo "Checking domain live typically involves verifying whether a domain name is currently accessible and responsive on the internet."
+	echo "√√√√√√√"
+	echo "No mitigation"
 }
 
 param_discovery() {
     local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Parameter Discovery"
-	echo "######################################################################"
-	paramspider -d $domain &> /dev/null
+	echo "√√√√√√√"
+	paramspider -d $domain | tr '#' '-' &> /dev/null
 	cat results/$domain.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Finding or Discovering parameters is an important thing that helps attackers in finding bugs."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Validating the parameters as an input and sanitizing it."
 }
 
 wayback_machine() {
     local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Extracting URLs from Waybackmachine"
-	echo "######################################################################"
-	echo "$domain" | waybackurls | tee wayback.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
+	echo "$domain" | waybackurls | tr '#' '-' | tee wayback.txt
+	echo "√√√√√√√"
 	echo "Finding or Discovering parameters is an important thing that helps attackers in finding bugs."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Validating the parameters as an input and sanitizing it."
 }
 
 xss_scan() {
     local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Scanning XSS"
-	echo "######################################################################"
-	cat wayback.txt | gf xss | tee xss.txt
+	echo "√√√√√√√"
+	cat wayback.txt | gf xss | tr '#' '-' |tee xss.txt
 	cat results/$domain.txt xss.txt | kxss | tee possible_xss.txt
 	while IFS= read -r line; do
         # Extract URL, Param, and Unfiltered fields
@@ -82,46 +89,46 @@ xss_scan() {
             echo "Vulnerable to XSS: $url?${param}=<script>alert('XSS')</script>"
         fi
     done < possible_xss.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Cross-Site Scripting (XSS) is a vulnerability that allows attackers to inject malicious scripts into webpages viewed by users."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Implement robust input validation and output encoding, utilize Content Security Policy (CSP), and sanitize user inputs to prevent script injection."
 }
 
 sqli_scan() {
     local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Scanning SQLi"
-	echo "######################################################################"
-	cat wayback.txt | gf sqli | tee sqli.txt
+	echo "√√√√√√√"
+	cat wayback.txt | gf sqli | tr '#' '-' |tee sqli.txt
     cat results/$domain.txt sqli.txt | sqlmap --batch | tee possible_sqli.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "SQL Injection (SQLi) allows attackers to manipulate queries to the database by injecting malicious SQL code through input fields, potentially leading to unauthorized data access and modification."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Use prepared statements and parameterized queries, employ input validation, and sanitize inputs to prevent SQL code from being executed."
 }
 
 redirect_scan() {
     local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Scanning Open Redirect"
-	echo "######################################################################"
-	cat wayback.txt | gf redirect | tee redirect.txt
-    python3 ../tools/Oralyzer/oralyzer.py -l results/$1.txt redirect.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
+	cat wayback.txt | gf redirect | tr '#' '-' |tee redirect.txt
+    python3 ~/tools/Oralyzer/oralyzer.py -l results/$1.txt redirect.txt
+	echo "√√√√√√√"
 	echo "An open redirect vulnerability occurs when an application accepts untrusted input to craft URLs that cause a redirect to an external site, potentially leading to phishing or malware distribution."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Validate and sanitize all input used in redirects, and only allow redirects to trusted, whitelisted URLs."
 }
 
 lfi_scan() {
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Scanning Local File Inclusion"
-	echo "######################################################################"
-	cat results/$domain.txt wayback.txt | gf lfi | tee lfi.txt
+	echo "√√√√√√√"
+	cat results/$domain.txt wayback.txt | gf lfi | tr '#' '-' |tee lfi.txt
 	cat lfi.txt | qsreplace '../../etc/passwd' | tee possible_lfi.txt
     while IFS= read -r url; do
         response=$(curl -s "$url")
@@ -133,9 +140,9 @@ lfi_scan() {
         fi
     done < possible_lfi.txt
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "LFI (Local File Inclusion) vulnerability allows an attacker to include files on a server through the web browser, potentially leading to unauthorized access or code execution."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Implement proper input validation and use whitelisting techniques to restrict file inclusion to authorized directories and files."
 }
 

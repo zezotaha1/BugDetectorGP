@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Check if an IP address was provided
 if [ -z "$1" ]; then
@@ -16,7 +16,7 @@ cves=$(curl -s "$url" | grep -Eo 'CVE-[0-9]{4}-[0-9]+' | sort | uniq | tee cves.
 cves_number=$(cat cves.txt | wc -l)
 
 echo "Title: Vulnerabilities"
-echo "######################################################################"
+echo "√√√√√√√"
 
 echo "Output: "
 if [ -s "cves.txt" ]; then
@@ -37,9 +37,9 @@ if [ -s "cves.txt" ]; then
 else
     echo "NO vulnerabilities found for this IP"
 fi
-echo "######################################################################"
+echo "√√√√√√√"
 echo "Description: Scan for vulnerabilities associated with the discovered device(s) using Shodan, enabling     identification of potential security weaknesses in the targeted systems and networks."
-echo "######################################################################"
+echo "√√√√√√√"
 echo "Mitigation: "
 if [ -s "cves.txt" ]; then    
     while IFS= read -r cve; do
@@ -54,6 +54,6 @@ if [ -s "cves.txt" ]; then
 else
     echo "NO mitigation"
 fi
-echo "######################################################################"
+echo "√√√√√√√"
 # Cleanup
 rm cves.txt

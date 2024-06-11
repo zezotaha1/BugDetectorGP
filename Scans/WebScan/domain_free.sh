@@ -1,33 +1,34 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Function to validate domain or subdomain
 validate_domain() {
 	local domain=$1
 
-	echo "######################################################################"
-	echo "Validating Domain Format"
-	echo "######################################################################"
+	echo "√√√√√√√"
+	echo "Validating Domain/Subomain Format"
+	echo "√√√√√√√"
 
 	# Regex pattern for domain/subdomain validation
 	local pattern="^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$"
 
 	# Check if the input matches the pattern
 	if [[ $domain =~ $pattern ]]; then
-		echo -e "Valid domain/subdomain format: $domain"
+		echo -e "$domain is valid"
 		# Check if the domain is live or down
-		check_domain_status "$domain"
 	else
 		echo -e "Error: Invalid domain/subdomain format: $domain"
 		exit 1
 	fi
+	echo "√√√√√√√"
+	echo "Checking domain format involves verifying whether a given string conforms to the syntax rules of a valid domain name, typically consisting of alphanumeric characters and hyphens separated by periods, and meeting length restrictions specified by standards such as DNS."
 }
 
 check_domain_status() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking Domain/Subdomain Connection"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Check if the domain is live by sending a ping request
 	if ping -c 1 "$domain" &>/dev/null; then
 		echo -e "Domain is live: $domain"
@@ -35,104 +36,106 @@ check_domain_status() {
 		echo -e "Error: Domain is down: $domain"
 		exit 1
 	fi
+	echo "√√√√√√√"
+	echo "Checking domain live typically involves verifying whether a domain name is currently accessible and responsive on the internet."
 }
 
 target_whois() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Information gathering"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v whois &> /dev/null; then
-		whois "$domain"
+		whois "$domain" | tr '#' '-'
 	else
 		echo "Error: whois command not found"
 	fi	
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Gathering information using whois command is to identifying registry like creation date, admin country, name servers, etc."
 }
 
-web_tech() {
-	local domain=$1
+# web_tech() {
+# 	local domain=$1
 
-	echo "######################################################################"
-	echo "Extracting Web Technologies"
-	echo "######################################################################"
-	if command -v whatweb &> /dev/null; then
-		whatweb "$domain" | tr ',' '\n'
-	else
-		echo "Error: whatweb command not found"
-	fi
-	echo "######################################################################"
-	echo "Collecting web technologies and operating system which website based on"
-}
+# 	echo "√√√√√√√"
+# 	echo "Extracting Web Technologies"
+# 	echo "√√√√√√√"
+# 	if command -v whatweb &> /dev/null; then
+# 		whatweb "$domain" | tr ',' '\n'
+# 	else
+# 		echo "Error: whatweb command not found"
+# 	fi
+# 	echo "√√√√√√√"
+# 	echo "Collecting web technologies and operating system which website based on"
+# }
 
 A_Record() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "DNS Enumeration (A Record)"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v host &> /dev/null; then
 		host -t A $domain | cut -d ' ' -f 4
 	else
 		echo "Error: Connection timeout"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Enumerating domain/subdomain dns is a sensitive process that identify A records that fetch the original IPv4 from domain"
 }
 
 NS_Record() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "DNS Enumeration (NS Record)"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v host &> /dev/null; then
 		host -t NS $domain | cut -d ' ' -f 4
 	else
 		echo "Error: Connection timeout"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Enumerating domain/subdomain dns is a sensitive process that identify NS records that fetch all name servers"
 }
 
 MX_Record() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "DNS Enumeration (MX Record)"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v host &> /dev/null; then
 		host -t MX $domain | cut -d ' ' -f 4
 	else
 		echo "Error: Connection timeout"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Enumerating domain/subdomain dns is a sensitive process that identify NS records that fetch mail servers names"
 }
 
-ssl_cert() {
-	local domain=$1
+# ssl_cert() {
+# 	local domain=$1
 
-	echo "######################################################################"
-	echo "Checking SSL Certificate"
-	echo "######################################################################"
-	if command -v sslyze &> /dev/null; then
-		sslyze "$domain"
-	else
-		echo "Error: sslyze command not found"
-	fi
-	echo "######################################################################"
-	echo "Checking domain/subdomain SSL certificate that related to if the domain/subdomain has a secure or unsecure traffic"
-}
+# 	echo "√√√√√√√"
+# 	echo "Checking SSL Certificate"
+# 	echo "√√√√√√√"
+# 	if command -v sslyze &> /dev/null; then
+# 		sslyze "$domain"
+# 	else
+# 		echo "Error: sslyze command not found"
+# 	fi
+# 	echo "√√√√√√√"
+# 	echo "Checking domain/subdomain SSL certificate that related to if the domain/subdomain has a secure or unsecure traffic"
+# }
 
 check_protocol() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking HTTP/HTTPS"
-	echo "######################################################################"
+	echo "√√√√√√√"
 
 	local response=$(curl -sIL "$domain")
 	if [[ $response == *"HTTP/1."* ]]; then
@@ -140,30 +143,30 @@ check_protocol() {
 	else
 		echo -e "Communication is made over a secure protocol using HTTPS."
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking if domain/subdomain uses a HTTP/HTTPS protocol"
 }
 
 waf() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking WAF"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v wafw00f &> /dev/null; then
 		wafw00f http://"$domain" | grep -A 4 -E "Checking"
 	else
 		echo "Error: wafw00f command not found"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking web application firewall is a sensitive process that detecting if domain/subdomain uses a WAF or not"
 }
 
 res_headers() {
 	local domain=$1
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking Response Headers"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	curl -sI "$domain" -o results.txt
 	for header in $(cat response_headers.txt); do
 		if grep -q "^$header:" results.txt; then
@@ -172,7 +175,7 @@ res_headers() {
 			echo -e "Security header: $header is missing."
 		fi
 	done
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Checking response headers for security impacts that attackers can exploit the existence of specific response header"
 	rm results.txt
 }
@@ -180,9 +183,9 @@ res_headers() {
 check_robots() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling robots.txt file"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Fetch the robots.txt file and check the HTTP response code
 	local response=$(curl -s -o /dev/null -w "%{http_code}" "http://$domain/robots.txt")
 	# Check if the response code is 200 (OK) or 301 (Moved Permanently)
@@ -191,16 +194,16 @@ check_robots() {
 	else
 		echo -e "robots.txt does not exist for http://$domain"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling robots.txt file is being inside the information gathering process, this file contains allowed/disallowed user-agents and paths"
 }
 
 check_sitemap() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling sitemap.xml file"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Fetch the sitemap.xml file and check the HTTP response code
 	local response=$(curl -s -o /dev/null -w "%{http_code}" "http://$domain/sitemap.xml")
 	# Check if the response code is 200 (OK) or 301 (Moved Permanently)
@@ -209,16 +212,16 @@ check_sitemap() {
 	else
 		echo -e "sitemap.xml does not exist for http://$domain"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "A sitemap file is an XML document that lists the URLs of a website, helping search engines understand its structure and improve indexing."
 }
 
 check_clientaccesspolicy() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling clientaccesspolicy.xml file"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Fetch the clientaccesspolicy.xml file and check the HTTP response code
 	local response=$(curl -s -o /dev/null -w "%{http_code}" "http://$domain/clientaccesspolicy.xml")
 	# Check if the response code is 200 (OK) or 301 (Moved Permanently)
@@ -227,16 +230,16 @@ check_clientaccesspolicy() {
 	else
 		echo -e "clientaccesspolicy.xml does not exist for http://$domain"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "A clientaccesspolicy.xml file is an XML configuration file used by Silverlight applications to define cross-domain access policies for making network requests to a domain."
 }
 
 check_crossdomain() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling crossdomain.xml file"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	# Fetch the crossdomain.xml file and check the HTTP response code
 	local response=$(curl -s -o /dev/null -w "%{http_code}" "http://$domain/crossdomain.xml")
 	# Check if the response code is 200 (OK) or 301 (Moved Permanently)
@@ -245,16 +248,16 @@ check_crossdomain() {
 	else
 		echo -e "crossdomain.xml does not exist for http://$domain"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "A crossdomain.xml file is an XML configuration file used by web applications to specify permissions for cross-origin resource sharing, allowing controlled access to resources by external domains."
 }
 
 sub_enum() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Subdomain Enumeration"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v subfinder &> /dev/null; then
 		subfinder -silent -d "$domain" -o subs.txt
 		local count=$(cat subs.txt | wc -l)
@@ -262,34 +265,34 @@ sub_enum() {
 	else
 		echo "Error: subfinder command not found"
 	fi
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Subdomain enumeration is the process of identifying and listing all the subdomains associated with a main domain, often used for security assessments and reconnaissance."
 }
 
-live_subs() {
-	local domain=$1
+# live_subs() {
+# 	local domain=$1
 
-	echo "######################################################################"
-	echo "Collecting Live Subdomains"
-	echo "######################################################################"
-	if command -v httpx &> /dev/null; then
-		cat subs.txt | httpx -silent -mc 200 | tee live.txt
-		local count=$(cat live.txt | wc -l)
-		echo -e "Found $count live subdomains for $domain"
-	else
-		echo "Error: httpx command not found"
-	fi
-	rm subs.txt live.txt
-	echo "######################################################################"
-	echo "Live subdomain enumeration is the process of actively identifying and listing all subdomains of a given domain in real-time."
-}
+# 	echo "√√√√√√√"
+# 	echo "Collecting Live Subdomains"
+# 	echo "√√√√√√√"
+# 	if command -v httpx &> /dev/null; then
+# 		cat subs.txt | httpx -silent -mc 200 | tee live.txt
+# 		local count=$(cat live.txt | wc -l)
+# 		echo -e "Found $count live subdomains for $domain"
+# 	else
+# 		echo "Error: httpx command not found"
+# 	fi
+# 	rm subs.txt live.txt
+# 	echo "√√√√√√√"
+# 	echo "Live subdomain enumeration is the process of actively identifying and listing all subdomains of a given domain in real-time."
+# }
 
 fuzzing() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Finding Sensitive Endpoints"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	if command -v dirsearch &> /dev/null; then
 		dirsearch -u "$domain" --full-url | grep -oE 'http[s]?://[^[:space:]]+' | tee dirs.txt
 		local count=$(cat dirs.txt | wc -l)
@@ -298,43 +301,43 @@ fuzzing() {
 		echo "Error: dirsearch command not found"
 	fi
 	rm dirs.txt
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Directory fuzzing is a technique used in cybersecurity to discover hidden directories and files on a web server by systematically testing various directory names."
 }
 
 json_files() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling JSON files"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "$domain" | waybackurls | grep 'json'
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "JSON files are lightweight data-interchange formats that may contain structured data or configurations and are often used in web applications."
 }
 
 js_files() {
 	local domain=$1
 
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Crawling JS files"
-	echo "######################################################################"
+	echo "√√√√√√√"
 	katana -u $domain | grep -iE '\.js' | grep -iEv '(\.jsp|\.json)'
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "JavaScript files contain code that enables dynamic, interactive behavior on websites by manipulating the HTML and CSS, responding to user actions, and communicating with servers."
 }
 
-emails() {
-	local domain=$1
+# emails() {
+# 	local domain=$1
 
-	echo "######################################################################"
-	echo "Finding Emails"
-	echo "######################################################################"
-	emailfinder -d "$domain" 
-	echo "######################################################################"
-	echo "EmailFinder can locate email addresses associated with a domain or individual."
+# 	echo "√√√√√√√"
+# 	echo "Finding Emails"
+# 	echo "√√√√√√√"
+# 	emailfinder -d "$domain" 
+# 	echo "√√√√√√√"
+# 	echo "EmailFinder can locate email addresses associated with a domain or individual."
 
-}
+# }
 
 # Main function to process the input
 process_input() {
@@ -342,11 +345,11 @@ process_input() {
 
 	if validate_domain "$input" && check_domain_status "$input"; then
 		target_whois "$input"
-		web_tech "$input"
+		#web_tech "$input"
 		A_Record "$input"
 		NS_Record "$input"
 		MX_Record "$input"
-		ssl_cert "$input"
+		#ssl_cert "$input"
 		check_protocol "$input"
 		waf "$input"
 		res_headers "$input"
@@ -355,11 +358,11 @@ process_input() {
 		check_crossdomain "$input"
 		check_clientaccesspolicy "$input"
 		sub_enum "$input"
-		live_subs "$input"
+		#live_subs "$input"
 		fuzzing "$input"
 		json_files "$input"
 		js_files "$input"
-		emails "$input"
+		#emails "$input"
 		exit 0
 	else
 		echo "Error: Domain is down or invalid format."

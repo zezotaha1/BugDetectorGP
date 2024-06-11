@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Function to check if a command exists
 check_command() {
@@ -34,7 +34,7 @@ scan_cidr(){
 
 local cidr=$1
 echo "Title: Host Discovery CIDR: $cidr"
-echo "######################################################################"
+echo "√√√√√√√"
 
 echo "Output: "
 live=$(nmap -sn -PU -PE -n -T4 "$cidr" 2>/dev/null | grep "Nmap scan report" | awk '{print $5}')
@@ -48,11 +48,11 @@ for ip in $live; do
    echo "$ip"
 done
 
-echo "######################################################################"
+echo "√√√√√√√"
 echo "Description: Performing host discovery with nmap to find live hosts in CIDR"
-echo "######################################################################"
+echo "√√√√√√√"
 echo "Mitigation: It is just information gathering, NO mitigation for it"
-echo "######################################################################"
+echo "√√√√√√√"
 
 # Call the function to perform scan on each live ip in parallel
 echo "$live" | parallel -j 8 perform_scan
@@ -62,9 +62,9 @@ reverse_dns_lookup(){
 
     local ip=$1
 
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Title: Reverse DNS Lookup IP: $ip"
-    echo "######################################################################"
+    echo "√√√√√√√"
 
     domain=$(dig -x "$ip" +short)
     if [ $? -eq 0 ]; then
@@ -84,18 +84,18 @@ reverse_dns_lookup(){
     else
         echo "Error : Error during performing reverse dns lookup"
     fi
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Description: The dig command is used to perform reverse DNS lookup on IPs and retrieve other related records"
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Mitigation: It is just information gathering, NO mitigation for it"
-    echo "######################################################################"
+    echo "√√√√√√√"
 }
 
 asn_lookup(){
     local ip=$1
 
     echo "Title: ASN Lookup IP: $ip"
-    echo "######################################################################"
+    echo "√√√√√√√"
 
     asn_result=$(whois -h whois.cymru.com " -v $ip" 2>&1)
     if [[ -n $asn_result ]]; then
@@ -104,11 +104,11 @@ asn_lookup(){
     else
         echo "Error: An error occurred while performing the ASN Lookup."
     fi
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Description: The whois command is used to retrieve ASN information from the Cymru WHOIS database."
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Mitigation: It is just information gathering, NO mitigation for it"
-    echo "######################################################################"
+    echo "√√√√√√√"
 }
 
 whois_lookup(){
@@ -116,7 +116,7 @@ whois_lookup(){
     local ip=$1
 
     echo "Title: Whois Lookup IP: $ip"
-    echo "######################################################################"
+    echo "√√√√√√√"
 
     echo "Output: "
     output=$(whois "$ip" 2>&1)
@@ -133,11 +133,11 @@ whois_lookup(){
         echo "Error: Failed to retrieve whois information."
     fi
 
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Description: The whois command is used to retrieve information about domain names, IP addresses, and related entities from the WHOIS database."
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Mitigation: It is just information gathering, NO mitigation for it"
-    echo "######################################################################"
+    echo "√√√√√√√"
 }
 
 traceroute_scan(){
@@ -145,7 +145,7 @@ traceroute_scan(){
     local ip=$1
 
     echo "Title: Traceroute IP: $ip"
-    echo "######################################################################"
+    echo "√√√√√√√"
 
     echo "Output: "
     traceroute_result=$(traceroute "$ip" 2>&1 | awk '!/\*/{print $1, $2, $3}' | column -t )
@@ -154,11 +154,11 @@ traceroute_scan(){
     else
         echo "Error: An error occurred while performing traceroute."
     fi
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Description: The traceroute command is used to trace the path packets take to reach the target IP address."
-    echo "######################################################################"
+    echo "√√√√√√√"
     echo "Mitigation: It is just information gathering, NO mitigation for it"
-    echo "######################################################################"
+    echo "√√√√√√√"
 }
 
 port_scanning(){
@@ -166,7 +166,7 @@ port_scanning(){
     local ip=$1
 
     echo "Title: Port Scanning IP: $ip"
-    echo "######################################################################"
+    echo "√√√√√√√"
 
     output=$(nmap -Pn -n -T4 --open -p1-65535 -sV "$ip" 2>/dev/null | grep -P '^\d+/tcp' | awk '{print $1}')
     if [[ $? -ne 0 ]]; then
@@ -178,11 +178,11 @@ port_scanning(){
         else
             echo "No open ports found in $ip"
         fi
-        echo "######################################################################"
+        echo "√√√√√√√"
         echo "Description: The nmap tool is used for port scanning to identify open ports on the target IP address."
-	echo "######################################################################"
+	echo "√√√√√√√"
 	echo "Mitigation: It is just information gathering, NO mitigation for it"
-        echo "######################################################################"
+        echo "√√√√√√√"
     fi
 }
 
@@ -242,9 +242,9 @@ if [ $# -ne 1 ]; then
     exit 1
 fi
 
-echo "######################################################################"
+echo "√√√√√√√"
 echo "Title: Checking IP Format/Connectivity"
-echo "######################################################################"
+echo "√√√√√√√"
 # Check if IP or CIDR
 input="$1"
 if [[ "$input" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
@@ -253,11 +253,11 @@ if [[ "$input" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
             echo "Output: "
             echo "The IP $input is valid"
             echo "The IP $input is live"
-            echo "######################################################################"
+            echo "√√√√√√√"
 	    echo "Description: Verify the format of IP and connectivity"
-	    echo "######################################################################"
+	    echo "√√√√√√√"
 	    echo "Mitigation: It is just information gathering, NO mitigation for it"
-	    echo "######################################################################"
+	    echo "√√√√√√√"
             perform_scan "$input"
         else
             echo "Error: The IP $input in not live"
@@ -269,11 +269,11 @@ elif [[ "$input" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]{1,2}$ ]]; then
     if validate_cidr "$input"; then
         echo "Output: "
         echo "The CIDR $input is valid"
-        echo "######################################################################"
+        echo "√√√√√√√"
 	echo "Description: Verify the correctness of the CIDR format"
-	echo "######################################################################"
+	echo "√√√√√√√"
         echo "Mitigation: It is just information gathering, NO mitigation for it"
-	echo "######################################################################"
+	echo "√√√√√√√"
         scan_cidr "$input"
     else
         echo "Error: Invalid CIDR"
