@@ -4,9 +4,9 @@ namespace BugDetectorGP.Models
 {
     public class ReturnReports
     {
-        public async static Task<FreeScanResult> FreeReport(string ReportResult)
+        public async static Task<PremiumScanResult> FreeReport(string ReportResult)
         {
-            var result = new List<FreeReportDto>();
+            var result = new List<PremiumReportDto>();
 
             for (int i = 0; i < ReportResult.Length; i++)
             {
@@ -19,15 +19,16 @@ namespace BugDetectorGP.Models
                 while (i < ReportResult.Length && ReportResult[i] == '#') { i++; continue; }
                 while (i < ReportResult.Length && ReportResult[i] != '#') { details += ReportResult[i]; i++; continue; }
 
-                result.Add(new FreeReportDto
+                result.Add(new PremiumReportDto
                 {
                     title = title,
                     details = details,
-                    output = output
+                    output = output,
+                    mitigation = "mitigation for Premium"
                 });
             }
 
-            return new FreeScanResult() { result = result };
+            return new PremiumScanResult() { result = result };
         }
         public async static Task<PremiumScanResult> PremiumReport(string ReportResult)
         {
