@@ -50,6 +50,17 @@ namespace BugDetectorGP.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser")==false)
+            {
+                return BadRequest("you must be subscribe");
+            }
+
             var result = await Execute("bash " + WebScanPath + "/domain_premium.sh " + model.url);
             return await ScanResult(result, model.url, "PremiumWebScan");
         }
@@ -69,6 +80,17 @@ namespace BugDetectorGP.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser") == false)
+            {
+                return BadRequest("you must be subscribe");
+            }
 
             var result = await Execute("bash " + NetworkScanPath + "/premium.sh " + model.url);
             return await ScanResult(result, model.url, "PremiumNetworkScan");
@@ -91,7 +113,7 @@ namespace BugDetectorGP.Controllers
         }
 
         [HttpPost("SchedulePremiumWebScan")]
-        public IActionResult SchedulePremiumWebScan(ScheduleScan model)
+        public async Task<IActionResult> SchedulePremiumWebScan(ScheduleScan model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -101,13 +123,24 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("The specified time is in the past.");
             }
 
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser") == false)
+            {
+                return BadRequest("you must be subscribe");
+            }
+
             var WebScan = new WebScan() { url = model.url };
             _taskSchedulerService.ScheduleTask(model.date, () => PremiumWebScan(WebScan));
             return Ok("Premium Web Scan scheduled successfully.");
         }
 
         [HttpPost("ScheduleFreeNetworkScan")]
-        public IActionResult ScheduleFreeNetworkScan(ScheduleScan model)
+        public async Task<IActionResult> ScheduleFreeNetworkScan(ScheduleScan model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -123,7 +156,7 @@ namespace BugDetectorGP.Controllers
         }
 
         [HttpPost("SchedulePremiumNetworkScan")]
-        public IActionResult SchedulePremiumNetworkScan(ScheduleScan model)
+        public async Task<IActionResult> SchedulePremiumNetworkScan(ScheduleScan model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -131,6 +164,17 @@ namespace BugDetectorGP.Controllers
             if (model.date < DateTime.Now.ToLocalTime())
             {
                 return BadRequest("The specified time is in the past.");
+            }
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser") == false)
+            {
+                return BadRequest("you must be subscribe");
             }
 
             var WebScan = new WebScan() { url = model.url };
@@ -269,7 +313,7 @@ namespace BugDetectorGP.Controllers
                 result += $"Error: {ex.Message}";
             }
 
-            return result.Replace("\n", "<br>").Replace("\t", "");
+            return result;
         }
         
     }

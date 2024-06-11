@@ -69,9 +69,9 @@ namespace GBugDetectorGP.Scans.SourceCode.output
                 // Explanation is after the mitigation function
                 string explanation = splitContent.Length > 2 ? splitContent[2] : "No explanation found.";
 
-                SolutionScanResults+="##########"+InjectedFunction.Replace("\n", "<br>").Replace("\t", "").Replace("#","*");
-                SolutionScanResults+= "##########" + mitigationFunction.Replace("\n", "<br>").Replace("\t", "").Replace("#", "*");
-                SolutionScanResults += "##########" + explanation.Replace("\n", "<br>").Replace("\t", "").Replace("#", "*");
+                SolutionScanResults+="##########"+InjectedFunction.Replace("#","*");
+                SolutionScanResults+= "##########" + mitigationFunction.Replace("#", "*");
+                SolutionScanResults += "##########" + explanation.Replace("#", "*");
             }
             catch (HttpRequestException e)
             {

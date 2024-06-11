@@ -45,9 +45,21 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("This URL is not a GitHub Repository URL!");
             }
 
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser") == false)
+            {
+                return BadRequest("you must be subscribe");
+            }
+
+
             // Create a unique folder path
             string uniqueFolderName = GenerateUniqueFolderName();
-            string repositoryPath = Path.Combine(GithubRepos, uniqueFolderName);
+            string repositoryPath = Path.Combine(GithubRepos, uniqueFolderName+"src");
 
             // Ensure the folder exists
             CreateFolder(repositoryPath);
@@ -77,6 +89,17 @@ namespace BugDetectorGP.Controllers
             if (model.date < DateTime.Now.ToLocalTime())
             {
                 return BadRequest("The specified time is in the past.");
+            }
+
+            var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var findUser = await _userManager.FindByNameAsync(userName);
+
+            if (findUser == null)
+                return BadRequest("You must be logged in or your username is incorrect");
+            var rolse = await _userManager.GetRolesAsync(findUser);
+            if (rolse.Contains("PremiumUser") == false)
+            {
+                return BadRequest("you must be subscribe");
             }
 
             var WebScan = new WebScan() { url = model.url };
