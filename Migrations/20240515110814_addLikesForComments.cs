@@ -17,7 +17,8 @@ namespace BugDetectorGP.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LikeOrDislike = table.Column<bool>(type: "bit", nullable: false),
+                    LikeFlag = table.Column<bool>(type: "bit", nullable: false),
+                    DisLikeFlag = table.Column<bool>(type: "bit", nullable: false),
                     PublicationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CommentId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)

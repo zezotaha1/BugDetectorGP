@@ -41,7 +41,7 @@ namespace BugDetectorGP.Controllers
                 return BadRequest("Email is Require");
 
             if (await _userManager.FindByEmailAsync(model.email) is not null)
-                return BadRequest("Email is already registered!") ;
+                return BadRequest("Email is already registered!");
             
             if (EmailAndOTP.ContainsKey(model.email)==true)
             {

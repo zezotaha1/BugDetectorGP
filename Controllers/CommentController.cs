@@ -70,7 +70,6 @@ namespace BugDetectorGP.Controllers
             {
                 return BadRequest("You must be login or your username incorrect");
             }
-
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)
                 return BadRequest("Blog Not Found");
@@ -206,11 +205,10 @@ namespace BugDetectorGP.Controllers
             }
             if (findCommentLike.LikeOrDislike == true)
             {
-                findCommentLike.LikeOrDislike = false;
-
-                Comment.DislikeNumber++;
-                Comment.LikeNumber--;
-
+                findCommentLike.LikeOrDislike = true;
+                Comment.LikeNumber -= 1;
+                Comment.DislikeNumber += 1;
+                Comment.LikeNumber = int.Max(0, Comment.DislikeNumber);
                 _Context.SaveChanges();
 
                 return Ok("Dislike added and your like removed");
@@ -220,9 +218,7 @@ namespace BugDetectorGP.Controllers
 
             _Context.LikesAndDislikesForComments.Remove(findCommentLike);
             _Context.SaveChanges();
-
-            return Ok("Your DisLike removed");
+            return Ok("Your Like removed");
         }
-
     }
 }

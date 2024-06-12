@@ -56,20 +56,15 @@ namespace BugDetectorGP.Controllers
             _Context.SaveChanges();
             return Ok("New Blog is added");
         }
-
+        [Authorize]
         [HttpDelete("DeleteBlog")]
         public async Task<IActionResult> DeleteBlog(BlogIdDTO model)
         {
+           
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
             var userName = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var findUser = await _userManager.FindByNameAsync(userName);
-
-            if (findUser == null)
-            {
-                return BadRequest("You must be login or your username incorrect");
-            }
 
             var blog = await _Context.Blogs.SingleOrDefaultAsync(u => u.BlogId == model.BlogId);
             if (blog == null)

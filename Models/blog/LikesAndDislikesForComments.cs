@@ -8,7 +8,7 @@ namespace BugDetectorGP.Models.blog
         [Key]
         public int Id { get; set; }
 
-        public bool LikeOrDislike { get; set; }//if true this meen like else dislike 
+        public bool LikeOrDislike { get; set; }
 
         public DateTime PublicationDate { get; set; } = DateTime.Now;
 
